@@ -1,0 +1,7 @@
+# Project exclude paths
+/cmake-build-debug/
+.idea
+cmake-build-node
+cmake-build-provisioner
+sdkconfig
+build
