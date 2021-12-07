@@ -21,4 +21,11 @@ typedef struct __attribute__((packed)) {
     char device_name[6];
 } model_sensors_data_t;
 
+typedef struct __attribute__((packed)) {
+    uint8_t uuid[16];
+    uint16_t major;
+    uint16_t minor;
+    int rssi;
+} model_ibeacon_data_t;
+
 #endif //TEST_MESH_NETWORK_CUSTOM_SENSOR_MODEL_MESH_H
