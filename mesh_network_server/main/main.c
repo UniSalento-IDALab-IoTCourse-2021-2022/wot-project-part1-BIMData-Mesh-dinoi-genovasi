@@ -23,9 +23,7 @@ void app_main(void)
         lux = read_lux();
         readDHT(&hum, &temp);
         ESP_LOGI(MAIN_TAG,"LUX: %f, TEMP: %d, HUM: %d\n",lux,temp,hum);
-        _server_model_state.humidity = hum;
-        _server_model_state.lux = lux;
-        _server_model_state.temperature = temp;
+        update_state(lux,temp,hum);
         vTaskDelay(pdMS_TO_TICKS(5000));
     }
 

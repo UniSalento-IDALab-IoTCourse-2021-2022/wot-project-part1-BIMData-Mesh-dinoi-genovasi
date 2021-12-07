@@ -57,3 +57,10 @@ void custom_sensors_server_callback(esp_ble_mesh_model_cb_event_t event,esp_ble_
             break;
     }
 }
+
+void update_state(float lux, int hum, int temp){
+    _server_model_state.humidity = hum;
+    _server_model_state.lux = lux;
+    _server_model_state.temperature = temp;
+
+}
