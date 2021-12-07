@@ -7,21 +7,11 @@ esp_err_t ble_mesh_init(){
     ESP_LOGI("MESH_INIT","Init Mesh Network");
 
     esp_ble_mesh_register_prov_callback(provisioning_callback);
-#ifdef DEVICE_NODE
-    esp_ble_mesh_register_config_server_callback(config_server_callback);
-    esp_ble_mesh_register_custom_model_callback(custom_sensors_server_callback);
-#endif
-#ifdef DEVICE_PROVISIONER
     esp_ble_mesh_register_custom_model_callback(custom_sensors_client_callback); //Da Sau Pau deu Brasiu
      esp_ble_mesh_register_config_client_callback(config_client_callback);
-#endif
 
      esp_ble_mesh_init(&provision,&composition);
-#ifdef DEVICE_NODE
-    ret = esp_ble_mesh_node_prov_enable(ESP_BLE_MESH_PROV_ADV);
-#endif
 
-#ifdef DEVICE_PROVISIONER
     uint8_t match[2] = {0xdd, 0xdd};
     prov_key.net_idx = ESP_BLE_MESH_KEY_PRIMARY;
     prov_key.app_idx = APP_KEY_IDX;
@@ -30,7 +20,6 @@ esp_err_t ble_mesh_init(){
      esp_ble_mesh_provisioner_set_dev_uuid_match(match, sizeof(match),0x0,false);
     esp_ble_mesh_provisioner_prov_enable(ESP_BLE_MESH_PROV_ADV);
     ret = esp_ble_mesh_provisioner_add_local_app_key(prov_key.app_key,prov_key.net_idx,prov_key.app_idx);
-#endif
 
     ESP_LOGI("MESH_INIT","Mesh Init Complete");
 
@@ -42,34 +31,24 @@ static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_me
     struct ble_mesh_provisioner_recv_unprov_adv_pkt_param unprov = param->provisioner_recv_unprov_adv_pkt;
     switch(event) {
         case ESP_BLE_MESH_PROVISIONER_PROV_COMPLETE_EVT:
-#ifdef DEVICE_PROVISIONER
             prov_complete(complete.node_idx,
                           complete.device_uuid,
                           complete.unicast_addr,
                           complete.element_num,
                           complete.netkey_idx);
-#endif
             break;
         case ESP_BLE_MESH_PROVISIONER_RECV_UNPROV_ADV_PKT_EVT:
-#ifdef DEVICE_PROVISIONER
             recv_unprov_adv_pkt(unprov.dev_uuid,unprov.addr,unprov.addr_type,unprov.oob_info,unprov.adv_type,unprov.bearer);
-#endif
             break;
         case ESP_BLE_MESH_PROVISIONER_ADD_LOCAL_APP_KEY_COMP_EVT:
-#ifdef DEVICE_PROVISIONER
             prov_key.app_idx = param->provisioner_add_app_key_comp.app_idx;
             esp_ble_mesh_provisioner_bind_app_key_to_local_model(PROV_OWN_ADDR,prov_key.app_idx,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_CLIENT,CID_ESP);
-#endif
             break;
         default:
             break;
     }
 }
-#ifdef DEVICE_NODE
-void config_server_callback(esp_ble_mesh_cfg_server_cb_event_t event, esp_ble_mesh_cfg_server_cb_param_t *param){
 
-}
-#else
 static void config_client_callback(esp_ble_mesh_cfg_client_cb_event_t event, esp_ble_mesh_cfg_client_cb_param_t *param) {
     esp_ble_mesh_client_common_param_t common = {0};
     esp_ble_mesh_node_info_t *node = NULL;
@@ -158,11 +137,7 @@ static void config_client_callback(esp_ble_mesh_cfg_client_cb_event_t event, esp
         }
     }
 }
-#endif
 
-#ifdef DEVICE_NODE
-
-#else
 static esp_err_t  store_node_info(const uint8_t uuid[16],uint16_t unicast, uint8_t elem_num){
     ESP_LOGI("STORE","Unicast addr %x",unicast);
     for (int i = 0; i< ARRAY_SIZE(nodes); i++){
@@ -274,31 +249,11 @@ esp_err_t ble_mesh_custom_sensor_client_model_message_get(){
     }
     return err;
 }
-#endif
 
 void ble_mesh_get_dev_uuid(uint8_t *dev_uuid){
     memcpy(dev_uuid +2, esp_bt_dev_get_address(),BD_ADDR_LEN);
 }
 
-#ifdef DEVICE_NODE
-void custom_sensors_server_callback(esp_ble_mesh_model_cb_event_t event,esp_ble_mesh_model_cb_param_t *param){
-    switch(event){
-
-        case ESP_BLE_MESH_MODEL_OPERATION_EVT:
-            switch(param->model_operation.opcode){
-                case ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_GET: ;
-                    model_sensors_data_t  response = *(model_sensors_data_t *)param->model_operation.model->user_data;
-                    esp_ble_mesh_server_model_send_msg(param->model_operation.model,param->model_operation.ctx,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS,sizeof(response),(uint8_t *)&response);
-                    break;
-                default:
-                    break;
-            }
-            break;
-        default:
-            break;
-    }
-}
-#else
 void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param){
     switch (event) {
         case ESP_BLE_MESH_MODEL_OPERATION_EVT:
@@ -313,4 +268,3 @@ void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, esp_ble
             break;
     }
 }
-#endif
