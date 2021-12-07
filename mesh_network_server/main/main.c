@@ -4,9 +4,9 @@
 
 #define MAIN_TAG "MAIN"
 
-#ifdef DEVICE_NODE
+
 #include "board.h"
-#endif
+
 
 void app_main(void)
 {
@@ -15,7 +15,6 @@ void app_main(void)
     ble_mesh_get_dev_uuid(dev_uuid);
     ble_mesh_init();
 
-#ifdef DEVICE_NODE
     board_init();
     float lux;
     int hum;
@@ -29,14 +28,6 @@ void app_main(void)
         _server_model_state.temperature = temp;
         vTaskDelay(pdMS_TO_TICKS(5000));
     }
-#endif
-#ifdef DEVICE_PROVISIONER
-    while(1){
-            //ESP_LOGI("MAIN", "Unicast address %x",nodes[i].unicast);
-            ble_mesh_custom_sensor_client_model_message_get();
-       vTaskDelay(pdMS_TO_TICKS(5000));
-    }
-#endif
 
 }
 
