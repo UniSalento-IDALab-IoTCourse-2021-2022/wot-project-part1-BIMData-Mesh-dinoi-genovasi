@@ -22,6 +22,7 @@ typedef struct __attribute__((packed)) {
 } model_sensors_data_t;
 
 typedef struct __attribute__((packed)) {
+//  iBeacon fields for beacon compatibility
     uint8_t uuid[16];
     uint16_t major;
     uint16_t minor;
