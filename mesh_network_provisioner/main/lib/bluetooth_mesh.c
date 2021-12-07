@@ -8,16 +8,18 @@ esp_err_t ble_mesh_init(){
 
     esp_ble_mesh_register_prov_callback(provisioning_callback);
     esp_ble_mesh_register_custom_model_callback(custom_sensors_client_callback); //Da Sau Pau deu Brasiu
-     esp_ble_mesh_register_config_client_callback(config_client_callback);
+    esp_ble_mesh_register_config_client_callback(config_client_callback);
 
-     esp_ble_mesh_init(&provision,&composition);
+    esp_ble_mesh_init(&provision,&composition);
+
+    esp_ble_mesh_client_model_init(&custom_models[0]);
 
     uint8_t match[2] = {0xdd, 0xdd};
     prov_key.net_idx = ESP_BLE_MESH_KEY_PRIMARY;
     prov_key.app_idx = APP_KEY_IDX;
     memset(prov_key.app_key,APP_KEY_OCTET,sizeof(prov_key.app_key));
 
-     esp_ble_mesh_provisioner_set_dev_uuid_match(match, sizeof(match),0x0,false);
+    esp_ble_mesh_provisioner_set_dev_uuid_match(match, sizeof(match),0x0,false);
     esp_ble_mesh_provisioner_prov_enable(ESP_BLE_MESH_PROV_ADV);
     ret = esp_ble_mesh_provisioner_add_local_app_key(prov_key.app_key,prov_key.net_idx,prov_key.app_idx);
 
@@ -229,6 +231,27 @@ static void recv_unprov_adv_pkt(uint8_t dev_uuid[16], uint8_t addr[BD_ADDR_LEN],
     esp_ble_mesh_provisioner_add_unprov_dev(&add_dev,(ADD_DEV_RM_AFTER_PROV_FLAG | ADD_DEV_START_PROV_NOW_FLAG | ADD_DEV_FLUSHABLE_DEV_FLAG));
 }
 
+
+void ble_mesh_get_dev_uuid(uint8_t *dev_uuid){
+    memcpy(dev_uuid +2, esp_bt_dev_get_address(),BD_ADDR_LEN);
+}
+
+static void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param){
+
+    switch (event) {
+        case ESP_BLE_MESH_MODEL_OPERATION_EVT:
+            switch(param->model_operation.opcode){
+                case ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS:;
+                    model_sensors_data_t response = *(model_sensors_data_t *)param->model_operation.model->user_data;
+                    ESP_LOGI("STATUS","Ricevuto da nodo: %s temp: %d hum: %d lux %f",response.device_name,response.temperature,response.humidity,response.lux);
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+}
+
 esp_err_t ble_mesh_custom_sensor_client_model_message_get(){
     esp_ble_mesh_msg_ctx_t ctx = {0};
     uint32_t opcode;
@@ -248,23 +271,4 @@ esp_err_t ble_mesh_custom_sensor_client_model_message_get(){
             ESP_LOGE("SEND_GET", "Sending error\n");
     }
     return err;
-}
-
-void ble_mesh_get_dev_uuid(uint8_t *dev_uuid){
-    memcpy(dev_uuid +2, esp_bt_dev_get_address(),BD_ADDR_LEN);
-}
-
-void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param){
-    switch (event) {
-        case ESP_BLE_MESH_MODEL_OPERATION_EVT:
-            switch(param->model_operation.opcode){
-                case ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS:;
-                   model_sensors_data_t response = *(model_sensors_data_t *)param->model_operation.model->user_data;
-                    ESP_LOGI("STATUS","Ricevuto da nodo: %s temp: %d hum: %d lux %f",response.device_name,response.temperature,response.humidity,response.lux);
-                    break;
-            }
-            break;
-        default:
-            break;
-    }
 }

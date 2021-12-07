@@ -13,8 +13,18 @@
 
 
 #define CID_ESP 0x02E5
+#define MSG_SEND_TTL        3
+#define MSG_SEND_REL        false
+#define MSG_TIMEOUT         0
+#define MSG_ROLE            ROLE_PROVISIONER
+#define COMP_DATA_PAGE_0    0x00
+#define PROV_OWN_ADDR 0x0001
+#define APP_KEY_IDX 0x0000
+#define APP_KEY_OCTET 0x12
 
 static uint8_t dev_uuid[16] = {0xdd, 0xdd};
+
+static esp_ble_mesh_client_t config_client;
 
 static esp_ble_mesh_cfg_srv_t config_server = {
         .relay = ESP_BLE_MESH_RELAY_DISABLED,
@@ -37,18 +47,8 @@ static esp_ble_mesh_cfg_srv_t config_server = {
 
 static esp_ble_mesh_model_t root_models[] = {
         ESP_BLE_MESH_MODEL_CFG_SRV(&config_server),
+        ESP_BLE_MESH_MODEL_CFG_CLI(&config_client)
 };
-
-static esp_ble_mesh_client_t config_client;
-
-#define MSG_SEND_TTL        3
-#define MSG_SEND_REL        false
-#define MSG_TIMEOUT         0
-#define MSG_ROLE            ROLE_PROVISIONER
-#define COMP_DATA_PAGE_0    0x00
-#define PROV_OWN_ADDR 0x0001
-#define APP_KEY_IDX 0x0000
-#define APP_KEY_OCTET 0x12
 
 static struct esp_ble_mesh_key {
     uint16_t net_idx;
@@ -69,8 +69,6 @@ static esp_ble_mesh_node_info_t nodes[CONFIG_BLE_MESH_MAX_PROV_NODES] = {
         }
 };
 
-
-
 static const esp_ble_mesh_client_op_pair_t custom_model_op_pair[] = {{ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_GET,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS}};
 static esp_ble_mesh_model_op_t custom_sensors_op[]={ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS,2),ESP_BLE_MESH_MODEL_OP_END};
 static esp_ble_mesh_client_t  custom_sensor_client = {.op_pair=custom_model_op_pair,.op_pair_size=ARRAY_SIZE(custom_model_op_pair),};
@@ -86,7 +84,7 @@ int ble_mesh_init();
 static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_mesh_prov_cb_param_t *param);
 static esp_err_t prov_complete(int node_idx, const esp_ble_mesh_octet16_t uuid, uint16_t unicast, uint8_t elem_num, uint16_t net_idx);
 static void config_client_callback(esp_ble_mesh_cfg_client_cb_event_t event, esp_ble_mesh_cfg_client_cb_param_t *param);
-void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param);
+static void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param);
 static void recv_unprov_adv_pkt(uint8_t dev_uuid[16], uint8_t addr[BD_ADDR_LEN], esp_ble_mesh_addr_type_t addrType, uint16_t oob_info, uint8_t adv_type, esp_ble_mesh_prov_bearer_t bearer);
 esp_err_t ble_mesh_custom_sensor_client_model_message_get(void);
 static esp_ble_mesh_node_info_t *ble_mesh_get_node_info(uint16_t unicast_addr);
