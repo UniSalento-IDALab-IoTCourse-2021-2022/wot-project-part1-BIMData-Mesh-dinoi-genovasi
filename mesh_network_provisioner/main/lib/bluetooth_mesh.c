@@ -242,7 +242,7 @@ static void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, 
         case ESP_BLE_MESH_MODEL_OPERATION_EVT:
             switch(param->model_operation.opcode){
                 case ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS:;
-                    model_sensors_data_t response = *(model_sensors_data_t *)param->model_operation.model->user_data;
+                    model_sensors_data_t response = *(model_sensors_data_t *)param->client_recv_publish_msg.msg;
                     ESP_LOGI("STATUS","Ricevuto da nodo: %s temp: %d hum: %d lux %f",response.device_name,response.temperature,response.humidity,response.lux);
                     break;
             }
