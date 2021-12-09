@@ -39,30 +39,7 @@ static esp_ble_mesh_model_t root_models[] = {
         ESP_BLE_MESH_MODEL_CFG_SRV(&config_server),
 };
 
-#ifdef DEVICE_PROVISIONER
 
-static esp_ble_mesh_client_t config_client;
-
-#define MSG_SEND_TTL        3
-#define MSG_SEND_REL        false
-#define MSG_TIMEOUT         0
-#define MSG_ROLE            ROLE_PROVISIONER
-#define COMP_DATA_PAGE_0    0x00
-typedef struct{
-    uint8_t uuid[16];
-    uint16_t unicast;
-    uint8_t elem_num;
-}esp_ble_mesh_node_info_t;
-
-static esp_ble_mesh_node_info_t nodes[CONFIG_BLE_MESH_MAX_PROV_NODES] = {
-        [0 ... (CONFIG_BLE_MESH_MAX_PROV_NODES -1)] = {
-                .unicast = ESP_BLE_MESH_ADDR_UNASSIGNED,
-                .elem_num = 0
-        }
-};
-#endif
-
-#ifdef DEVICE_NODE
 // Defining Custom Model operations
 static esp_ble_mesh_model_op_t custom_sensor_op[] = {
         ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_GET, 0),  // OP_GET no minimo 0 bytes
@@ -76,43 +53,16 @@ static esp_ble_mesh_model_t custom_models[]={
         ESP_BLE_MESH_VENDOR_MODEL(CID_ESP,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_SERVER,custom_sensor_op,NULL,&_server_model_state)
 };
 
-#endif
-
-#ifdef DEVICE_PROVISIONER
-
-#define PROV_OWN_ADDR 0x0001
-
-static const esp_ble_mesh_client_op_pair_t custom_model_op_pair[] = {{ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_GET,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS}};
-static esp_ble_mesh_model_op_t custom_sensors_op[]={ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS,2),ESP_BLE_MESH_MODEL_OP_END};
-static esp_ble_mesh_client_t  custom_sensor_client = {.op_pair=custom_model_op_pair,.op_pair_size=ARRAY_SIZE(custom_model_op_pair),};
-//TODO verificare model
-static esp_ble_mesh_model_t custom_models[] = {
-        ESP_BLE_MESH_VENDOR_MODEL(CID_ESP,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_CLIENT,custom_sensors_op,NULL,&custom_sensor_client)
-};
-#endif
-
 static esp_ble_mesh_elem_t elements[] = {
         ESP_BLE_MESH_ELEMENT(0, root_models, custom_models)
 };
 
 int ble_mesh_init();
 static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_mesh_prov_cb_param_t *param);
-#ifdef DEVICE_NODE
 void prov_complete(uint16_t net_idx, uint16_t add, uint8_t flags, uint32_t iv_index);
 void config_server_callback(esp_ble_mesh_cfg_server_cb_event_t event, esp_ble_mesh_cfg_server_cb_param_t *param);
 void custom_sensors_server_callback(esp_ble_mesh_model_cb_event_t event,esp_ble_mesh_model_cb_param_t *param);
-#endif
-#ifdef DEVICE_PROVISIONER
-static esp_err_t prov_complete(int node_idx, const esp_ble_mesh_octet16_t uuid, uint16_t unicast, uint8_t elem_num, uint16_t net_idx);
-static void config_client_callback(esp_ble_mesh_cfg_client_cb_event_t event, esp_ble_mesh_cfg_client_cb_param_t *param);
-void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param);
-static void recv_unprov_adv_pkt(uint8_t dev_uuid[16], uint8_t addr[BD_ADDR_LEN], esp_ble_mesh_addr_type_t addrType, uint16_t oob_info, uint8_t adv_type, esp_ble_mesh_prov_bearer_t bearer);
-esp_err_t ble_mesh_custom_sensor_client_model_message_get(void);
-static esp_ble_mesh_node_info_t *ble_mesh_get_node_info(uint16_t unicast_addr);
-static esp_err_t ble_mesh_set_msg_common(esp_ble_mesh_client_common_param_t *common, esp_ble_mesh_node_info_t *node, esp_ble_mesh_model_t *model, uint32_t opcode);
-#endif
 
-#ifdef DEVICE_NODE
 static esp_ble_mesh_prov_t provision = {
         .uuid = dev_uuid,
 #if 0   // Configure for OOB (out of bound exchange key) <Security>
@@ -125,21 +75,6 @@ static esp_ble_mesh_prov_t provision = {
 .output_size = 0,
 #endif
         };
-#endif
-#ifdef DEVICE_PROVISIONER
-static esp_ble_mesh_prov_t provision = {
-        .prov_uuid = dev_uuid,
-        .prov_unicast_addr = PROV_OWN_ADDR,
-        .prov_start_address = 0x0005,
-        .prov_attention = 0x00,
-        .prov_algorithm = 0x00,
-        .prov_pub_key_oob = 0x00,
-        .prov_static_oob_val = NULL,
-        .prov_static_oob_len = 0x00,
-        .flags = 0x00,
-        .iv_index = 0x00
-};
-#endif
 
 static esp_ble_mesh_comp_t composition = {
         .cid = CID_ESP,
@@ -149,16 +84,6 @@ static esp_ble_mesh_comp_t composition = {
 
 void ble_mesh_get_dev_uuid(uint8_t *dev_uuid);
 
-#ifdef DEVICE_PROVISIONER
-
-#define APP_KEY_IDX 0x0000
-#define APP_KEY_OCTET 0x12
-
-static struct esp_ble_mesh_key {
-    uint16_t net_idx;
-    uint16_t app_idx;
-    uint8_t app_key[16];
-}prov_key;
-#endif
+void update_state(float lux, int hum, int temp);
 
 #endif //TEST_MESH_NETWORK_BLUETOOTH_MESH_H
