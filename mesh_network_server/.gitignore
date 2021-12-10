@@ -5,3 +5,4 @@ cmake-build-node
 cmake-build-provisioner
 sdkconfig
 build
+cmake-build*
