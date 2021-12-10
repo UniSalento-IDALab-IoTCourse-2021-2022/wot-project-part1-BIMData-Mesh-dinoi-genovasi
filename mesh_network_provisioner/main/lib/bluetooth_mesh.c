@@ -1,7 +1,6 @@
 #include "bluetooth_mesh.h"
 
 esp_err_t ble_mesh_init(){
-//TODO: Check ret value
     esp_err_t ret = ESP_OK;
 
     ESP_LOGI("MESH_INIT","Init Mesh Network");
