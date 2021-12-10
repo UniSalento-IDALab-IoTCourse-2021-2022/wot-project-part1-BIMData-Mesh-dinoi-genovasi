@@ -15,7 +15,7 @@ void app_main(void)
     int temp;
     esp_err_t err;
 
-    ESP_LOG_INFO(MAIN_TAG, "Initializing...");
+    ESP_LOGI(MAIN_TAG, "Initializing...");
 
     err = nvs_flash_init();
     if (err == ESP_ERR_NVS_NO_FREE_PAGES) {
