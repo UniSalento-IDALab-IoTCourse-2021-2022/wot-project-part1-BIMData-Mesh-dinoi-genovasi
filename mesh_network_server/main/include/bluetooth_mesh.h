@@ -59,7 +59,8 @@ static esp_ble_mesh_elem_t elements[] = {
 
 int ble_mesh_init();
 static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_mesh_prov_cb_param_t *param);
-void prov_complete(uint16_t net_idx, uint16_t add, uint8_t flags, uint32_t iv_index);
+// For logging purpose only
+static void prov_complete(uint16_t net_idx, uint16_t addr, uint8_t flags, uint32_t iv_index);
 void config_server_callback(esp_ble_mesh_cfg_server_cb_event_t event, esp_ble_mesh_cfg_server_cb_param_t *param);
 void custom_sensors_server_callback(esp_ble_mesh_model_cb_event_t event,esp_ble_mesh_model_cb_param_t *param);
 
