@@ -23,7 +23,7 @@ void app_main(void)
         lux = read_lux();
         readDHT(&hum, &temp);
         ESP_LOGI(MAIN_TAG,"LUX: %f, TEMP: %d, HUM: %d\n",lux,temp,hum);
-        update_state(lux,temp,hum);
+        update_state(lux, hum, temp);
         vTaskDelay(pdMS_TO_TICKS(5000));
     }
 
