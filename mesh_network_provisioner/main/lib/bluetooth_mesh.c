@@ -6,22 +6,31 @@ esp_err_t ble_mesh_init(){
     ESP_LOGI("MESH_INIT","Init Mesh Network");
 
     ret = esp_ble_mesh_register_prov_callback(provisioning_callback);
-    if(ret != ESP_OK)
+    if(ret != ESP_OK){
         ESP_LOGE("MESH_INIT","Error registering provisioning callback");
+        return ret;
+    }
     ret = esp_ble_mesh_register_custom_model_callback(custom_sensors_client_callback);
-    if(ret != ESP_OK)
-        ESP_LOGE("MESH_INIT","Error registering custom model callback");
+    if(ret != ESP_OK) {
+        ESP_LOGE("MESH_INIT", "Error registering custom model callback");
+        return ret;
+    }
     ret = esp_ble_mesh_register_config_client_callback(config_client_callback);
-    if(ret != ESP_OK)
-        ESP_LOGE("MESH_INIT","Error registering config callback");
-
+    if(ret != ESP_OK) {
+        ESP_LOGE("MESH_INIT", "Error registering config callback");
+        return ret;
+    }
     ret = esp_ble_mesh_init(&provision,&composition);
-    if(ret != ESP_OK)
-        ESP_LOGE("MESH_INIT","Error during mesh init");
+    if(ret != ESP_OK) {
+        ESP_LOGE("MESH_INIT", "Error during mesh init");
+        return ret;
+    }
 
     ret = esp_ble_mesh_client_model_init(&custom_models[0]);
-    if(ret != ESP_OK)
+    if(ret != ESP_OK){
         ESP_LOGE("MESH_INIT","Error during model client init");
+        return ret;
+    }
 
     uint8_t match[2] = {0xdd, 0xdd};
     prov_key.net_idx = ESP_BLE_MESH_KEY_PRIMARY;
@@ -29,14 +38,20 @@ esp_err_t ble_mesh_init(){
     memset(prov_key.app_key,APP_KEY_OCTET,sizeof(prov_key.app_key));
 
     ret = esp_ble_mesh_provisioner_set_dev_uuid_match(match, sizeof(match),0x0,false);
-    if(ret != ESP_OK)
-        ESP_LOGE("MESH_INIT","Error during set dev uuid match");
+    if(ret != ESP_OK) {
+        ESP_LOGE("MESH_INIT", "Error during set dev uuid match");
+        return ret;
+    }
     ret = esp_ble_mesh_provisioner_prov_enable(ESP_BLE_MESH_PROV_ADV);
-    if(ret != ESP_OK)
-        ESP_LOGE("MESH_INIT","Error during enable provisioning");
+    if(ret != ESP_OK) {
+        ESP_LOGE("MESH_INIT", "Error during enable provisioning");
+        return ret;
+    }
     ret = esp_ble_mesh_provisioner_add_local_app_key(prov_key.app_key,prov_key.net_idx,prov_key.app_idx);
-    if(ret != ESP_OK)
-        ESP_LOGE("MESH_INIT","Error during add local app key");
+    if(ret != ESP_OK) {
+        ESP_LOGE("MESH_INIT", "Error during add local app key");
+        return ret;
+    }
 
     ESP_LOGI("MESH_INIT","Mesh Init Complete");
 
@@ -44,7 +59,6 @@ esp_err_t ble_mesh_init(){
 }
 
 static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_mesh_prov_cb_param_t *param){
-    provisioning = true;
     struct ble_mesh_provisioner_prov_comp_param complete = param->provisioner_prov_complete;
     struct ble_mesh_provisioner_recv_unprov_adv_pkt_param unprov = param->provisioner_recv_unprov_adv_pkt;
     switch(event) {
@@ -228,6 +242,8 @@ static esp_err_t prov_complete(int node_idx, const esp_ble_mesh_octet16_t uuid, 
     char name[11] = {0};
     esp_err_t err = ESP_OK;
 
+    ESP_LOGI("PROV COMPLETE","Provisioned device with uuid 0x%s and address %d",uuid,unicast);
+
     sprintf(name, "%s%d","NODE-", node_idx);
     esp_ble_mesh_provisioner_set_node_name(node_idx,name);
     store_node_info(uuid,unicast,elem_num);
@@ -239,7 +255,6 @@ static esp_err_t prov_complete(int node_idx, const esp_ble_mesh_octet16_t uuid, 
         ESP_LOGI("PROV","Provision Completed");
     else
         ESP_LOGE("PROV","Provision error");
-    provisioning = false;
     return err;
 }
 
