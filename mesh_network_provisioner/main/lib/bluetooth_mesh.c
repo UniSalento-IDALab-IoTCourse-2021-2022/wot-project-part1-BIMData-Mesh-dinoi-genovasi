@@ -1,5 +1,7 @@
 #include "bluetooth_mesh.h"
 
+static bool provisioning = true;
+
 esp_err_t ble_mesh_init(){
     esp_err_t ret = ESP_OK;
 
@@ -44,6 +46,7 @@ esp_err_t ble_mesh_init(){
 }
 
 static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_mesh_prov_cb_param_t *param){
+    provisioning = true;
     struct ble_mesh_provisioner_prov_comp_param complete = param->provisioner_prov_complete;
     struct ble_mesh_provisioner_recv_unprov_adv_pkt_param unprov = param->provisioner_recv_unprov_adv_pkt;
     switch(event) {
@@ -238,6 +241,7 @@ static esp_err_t prov_complete(int node_idx, const esp_ble_mesh_octet16_t uuid, 
         ESP_LOGI("PROV","Provision Completed");
     else
         ESP_LOGE("PROV","Provision error");
+    provisioning = false;
     return err;
 }
 
@@ -254,6 +258,7 @@ static void recv_unprov_adv_pkt(uint8_t dev_uuid[16], uint8_t addr[BD_ADDR_LEN],
 
 void ble_mesh_get_dev_uuid(uint8_t *dev_uuid){
     memcpy(dev_uuid +2, esp_bt_dev_get_address(),BD_ADDR_LEN);
+    ESP_LOG_BUFFER_HEX("DEVUUID",dev_uuid,16);
 }
 
 static void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param){
@@ -291,4 +296,8 @@ esp_err_t ble_mesh_custom_sensor_client_model_message_get(){
             ESP_LOGE("SEND_GET", "Sending error\n");
     }
     return err;
+}
+
+bool isProvisioning(){
+    return provisioning;
 }

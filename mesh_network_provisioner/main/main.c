@@ -12,7 +12,8 @@ void app_main(void)
     ble_mesh_init();
 
     while(1){
-        ble_mesh_custom_sensor_client_model_message_get();
+        if(!isProvisioning())
+            ble_mesh_custom_sensor_client_model_message_get();
         vTaskDelay(pdMS_TO_TICKS(5000));
     }
 }
