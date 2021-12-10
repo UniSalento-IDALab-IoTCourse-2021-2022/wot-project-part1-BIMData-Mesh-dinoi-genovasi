@@ -21,8 +21,8 @@ void app_main(void)
     int temp;
     while (1) {
         lux = read_lux();
-        readDHT(&hum, &temp);
-        ESP_LOGI(MAIN_TAG,"LUX: %f, TEMP: %d, HUM: %d\n",lux,temp,hum);
+        readDHT(&temp, &hum);
+        ESP_LOGI(MAIN_TAG,"LUX: %f, TEMP: %d, HUM: %d\n", lux, temp, hum);
         update_state(lux, hum, temp);
         vTaskDelay(pdMS_TO_TICKS(5000));
     }
