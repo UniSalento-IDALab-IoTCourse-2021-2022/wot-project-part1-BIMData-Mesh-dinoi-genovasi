@@ -72,7 +72,6 @@ static esp_ble_mesh_node_info_t nodes[CONFIG_BLE_MESH_MAX_PROV_NODES] = {
 static const esp_ble_mesh_client_op_pair_t custom_model_op_pair[] = {{ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_GET,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS}};
 static esp_ble_mesh_model_op_t custom_sensors_op[]={ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS,2),ESP_BLE_MESH_MODEL_OP_END};
 static esp_ble_mesh_client_t  custom_sensor_client = {.op_pair=custom_model_op_pair,.op_pair_size=ARRAY_SIZE(custom_model_op_pair),};
-//TODO verificare model
 static esp_ble_mesh_model_t custom_models[] = {
         ESP_BLE_MESH_VENDOR_MODEL(CID_ESP,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_CLIENT,custom_sensors_op,NULL,&custom_sensor_client)
 };
