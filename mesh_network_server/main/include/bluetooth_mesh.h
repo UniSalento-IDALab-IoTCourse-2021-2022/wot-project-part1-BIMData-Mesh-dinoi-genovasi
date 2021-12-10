@@ -47,7 +47,7 @@ static esp_ble_mesh_model_op_t custom_sensor_op[] = {
         ESP_BLE_MESH_MODEL_OP_END,
 };
 
-static model_sensors_data_t _server_model_state = {.device_name = "esp1",.temperature=0,.humidity=0, .lux = 0.0};
+static model_sensors_data_t _server_model_state = {.device_name = DEVICE_ID,.temperature=0,.humidity=0, .lux = 0.0};
 
 static esp_ble_mesh_model_t custom_models[]={
         ESP_BLE_MESH_VENDOR_MODEL(CID_ESP,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_SERVER,custom_sensor_op,NULL,&_server_model_state)

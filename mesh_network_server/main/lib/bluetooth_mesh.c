@@ -1,4 +1,5 @@
 #include "bluetooth_mesh.h"
+#define BLUETOOTH_MESH_TAG "BLE_MESH"
 
 esp_err_t ble_mesh_init(){
 //TODO: Check ret value
@@ -38,6 +39,7 @@ void config_server_callback(esp_ble_mesh_cfg_server_cb_event_t event, esp_ble_me
 
 void ble_mesh_get_dev_uuid(uint8_t *dev_uuid){
     memcpy(dev_uuid +2, esp_bt_dev_get_address(),BD_ADDR_LEN);
+    ESP_LOG_BUFFER_HEX("dev_uuid", dev_uuid, 16);
 }
 
 void custom_sensors_server_callback(esp_ble_mesh_model_cb_event_t event,esp_ble_mesh_model_cb_param_t *param){
@@ -48,6 +50,7 @@ void custom_sensors_server_callback(esp_ble_mesh_model_cb_event_t event,esp_ble_
                 case ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_GET: ;
                     model_sensors_data_t  response = *(model_sensors_data_t *)param->model_operation.model->user_data;
                     esp_ble_mesh_server_model_send_msg(param->model_operation.model,param->model_operation.ctx,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS,sizeof(response),(uint8_t *)&response);
+                    ESP_LOGI(BLUETOOTH_MESH_TAG,"MESH MESSAGE SENT - DEVICE: %s, LUX: %f, TEMP: %d, HUM: %d\n", response.device_name, response.lux, response.temperature, response.humidity);
                     break;
                 default:
                     break;
