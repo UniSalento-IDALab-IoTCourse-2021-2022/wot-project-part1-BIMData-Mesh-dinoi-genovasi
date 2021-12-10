@@ -12,7 +12,7 @@ void app_main(void)
 {
     nvs_flash_init();
     bluetooth_init();
-    ble_mesh_get_dev_uuid(dev_uuid);
+    ble_mesh_get_dev_uuid();
     ble_mesh_init();
 
     board_init();

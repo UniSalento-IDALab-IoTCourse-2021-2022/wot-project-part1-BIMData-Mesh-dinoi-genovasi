@@ -82,7 +82,7 @@ static esp_ble_mesh_comp_t composition = {
         .element_count = ARRAY_SIZE(elements)
 };
 
-void ble_mesh_get_dev_uuid(uint8_t *dev_uuid);
+void ble_mesh_get_dev_uuid();
 
 void update_state(float lux, int hum, int temp);
 

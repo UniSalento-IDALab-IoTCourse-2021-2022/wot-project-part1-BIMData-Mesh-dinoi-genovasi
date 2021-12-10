@@ -10,6 +10,8 @@ esp_err_t ble_mesh_init(){
     esp_ble_mesh_register_prov_callback(provisioning_callback);
     esp_ble_mesh_register_config_server_callback(config_server_callback);
     esp_ble_mesh_register_custom_model_callback(custom_sensors_server_callback);
+    //ESP_LOGI(BLUETOOTH_MESH_TAG,"############### UUID %s", bt_hex(provision.uuid, 16));
+    ESP_LOG_BUFFER_HEX("############### UUID %s", provision.uuid, 16);
     esp_ble_mesh_init(&provision,&composition);
     ret = esp_ble_mesh_node_prov_enable(ESP_BLE_MESH_PROV_ADV);
 
@@ -37,7 +39,7 @@ void config_server_callback(esp_ble_mesh_cfg_server_cb_event_t event, esp_ble_me
 
 }
 
-void ble_mesh_get_dev_uuid(uint8_t *dev_uuid){
+void ble_mesh_get_dev_uuid(){
     memcpy(dev_uuid +2, esp_bt_dev_get_address(),BD_ADDR_LEN);
     ESP_LOG_BUFFER_HEX("dev_uuid", dev_uuid, 16);
 }
