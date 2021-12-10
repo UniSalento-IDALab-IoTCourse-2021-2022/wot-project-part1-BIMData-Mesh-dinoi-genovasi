@@ -2,22 +2,29 @@
 #define BLUETOOTH_MESH_TAG "BLE_MESH"
 
 esp_err_t ble_mesh_init(){
-//TODO: Check ret value
-    esp_err_t ret = ESP_OK;
 
-    ESP_LOGI("MESH_INIT","Init Mesh Network");
+    esp_err_t err;
+
+    ESP_LOGI("MESH_INIT", "BLE Mesh Node initialization");
 
     esp_ble_mesh_register_prov_callback(provisioning_callback);
     esp_ble_mesh_register_config_server_callback(config_server_callback);
     esp_ble_mesh_register_custom_model_callback(custom_sensors_server_callback);
-    //ESP_LOGI(BLUETOOTH_MESH_TAG,"############### UUID %s", bt_hex(provision.uuid, 16));
-    ESP_LOG_BUFFER_HEX("############### UUID %s", provision.uuid, 16);
-    esp_ble_mesh_init(&provision,&composition);
-    ret = esp_ble_mesh_node_prov_enable(ESP_BLE_MESH_PROV_ADV);
 
-    ESP_LOGI("MESH_INIT","Mesh Init Complete");
+    err = esp_ble_mesh_init(&provision, &composition);
+    if (err != ESP_OK) {
+        ESP_LOGE(BLUETOOTH_MESH_TAG, "Failed to initialize mesh stack");
+        return err;
+    }
 
-    return ret;
+    err = esp_ble_mesh_node_prov_enable(ESP_BLE_MESH_PROV_ADV);
+    if (err != ESP_OK) {
+        ESP_LOGE(BLUETOOTH_MESH_TAG, "Failed to enable mesh node");
+        return err;
+    }
+
+    ESP_LOGI(BLUETOOTH_MESH_TAG, "BLE Mesh Node initialization complete");
+    return ESP_OK;
 }
 
 static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_mesh_prov_cb_param_t *param){
