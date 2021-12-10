@@ -1,7 +1,5 @@
 #include "bluetooth_mesh.h"
 
-static bool provisioning = true;
-
 esp_err_t ble_mesh_init(){
     esp_err_t ret = ESP_OK;
 
@@ -296,8 +294,4 @@ esp_err_t ble_mesh_custom_sensor_client_model_message_get(){
             ESP_LOGE("SEND_GET", "Sending error\n");
     }
     return err;
-}
-
-bool isProvisioning(){
-    return provisioning;
 }

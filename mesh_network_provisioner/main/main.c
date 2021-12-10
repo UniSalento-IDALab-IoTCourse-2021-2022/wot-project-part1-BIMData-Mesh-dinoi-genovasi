@@ -10,10 +10,8 @@ void app_main(void)
     bluetooth_init();
     ble_mesh_get_dev_uuid(dev_uuid);
     ble_mesh_init();
-
     while(1){
-        if(!isProvisioning())
-            ble_mesh_custom_sensor_client_model_message_get();
+        ble_mesh_custom_sensor_client_model_message_get();
         vTaskDelay(pdMS_TO_TICKS(5000));
     }
 }
