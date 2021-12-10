@@ -22,7 +22,7 @@ void app_main(void)
     while (1) {
         lux = read_lux();
         readDHT(&temp, &hum);
-        ESP_LOGI(MAIN_TAG,"ACQUIRED SENSOR VALUES - LUX: %f, TEMP: %d, HUM: %d\n", lux, temp, hum);
+        ESP_LOGI(MAIN_TAG,"ACQUIRED SENSOR VALUES - DEVICE: %s, LUX: %f, TEMP: %d, HUM: %d\n", DEVICE_ID, lux, temp, hum);
         update_state(lux, hum, temp);
         vTaskDelay(pdMS_TO_TICKS(5000));
     }

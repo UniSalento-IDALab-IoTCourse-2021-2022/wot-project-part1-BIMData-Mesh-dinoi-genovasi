@@ -9,7 +9,8 @@ cmake_minimum_required(VERSION 3.5)
 
 if ( DEV_NAME MATCHES prova)
     add_definitions(-DDEVICE_ID="esp1")
-else()
+endif()
+if (DEV_NAME MATCHES test)
     add_definitions(-DDEVICE_ID="esp2")
 endif()
 
