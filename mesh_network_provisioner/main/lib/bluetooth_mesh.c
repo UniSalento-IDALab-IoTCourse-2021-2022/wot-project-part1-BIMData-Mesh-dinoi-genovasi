@@ -242,7 +242,7 @@ static esp_err_t prov_complete(int node_idx, const esp_ble_mesh_octet16_t uuid, 
     char name[11] = {0};
     esp_err_t err = ESP_OK;
 
-    ESP_LOGI("PROV COMPLETE","Provisioned device with uuid 0x%s and address %d",uuid,unicast);
+    ESP_LOGI("PROV COMPLETE","Provisioned device with uuid 0x%s and address %d",bt_hex(uuid,16),unicast);
 
     sprintf(name, "%s%d","NODE-", node_idx);
     esp_ble_mesh_provisioner_set_node_name(node_idx,name);
