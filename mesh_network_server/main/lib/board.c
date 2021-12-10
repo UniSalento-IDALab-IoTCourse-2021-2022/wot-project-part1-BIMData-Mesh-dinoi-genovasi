@@ -1,3 +1,5 @@
+#include "freertos/FreeRTOS.h"
+#include <freertos/task.h>
 #include "board.h"
 
 void check_efuse(void)
@@ -35,6 +37,7 @@ void board_init(){
     esp_adc_cal_value_t val_type = esp_adc_cal_characterize(unit, atten, width, DEFAULT_VREF, adc_chars);
 
     DHT11_init(GPIO_NUM_4);
+    vTaskDelay(pdMS_TO_TICKS(500));
 }
 
 float read_lux() {
