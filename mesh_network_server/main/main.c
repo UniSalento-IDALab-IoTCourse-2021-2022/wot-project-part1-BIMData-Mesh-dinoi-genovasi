@@ -10,15 +10,37 @@
 
 void app_main(void)
 {
-    nvs_flash_init();
-    bluetooth_init();
-    ble_mesh_get_dev_uuid();
-    ble_mesh_init();
-
-    board_init();
     float lux;
     int hum;
     int temp;
+    esp_err_t err;
+
+    ESP_LOG_INFO(MAIN_TAG, "Initializing...");
+
+    err = nvs_flash_init();
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        err = nvs_flash_init();
+    }
+
+    ESP_ERROR_CHECK(err);
+
+    board_init();
+
+    err = bluetooth_init();
+    if (err) {
+        ESP_LOGE(MAIN_TAG, "esp32_bluetooth_init failed (err %d)", err);
+        return;
+    }
+
+    ble_mesh_get_dev_uuid();
+
+    /* Initialize the Bluetooth Mesh Subsystem */
+    err = ble_mesh_init();
+    if (err) {
+        ESP_LOGE(MAIN_TAG, "Bluetooth mesh init failed (err %d)", err);
+    }
+
     while (1) {
         lux = read_lux();
         readDHT(&temp, &hum);
