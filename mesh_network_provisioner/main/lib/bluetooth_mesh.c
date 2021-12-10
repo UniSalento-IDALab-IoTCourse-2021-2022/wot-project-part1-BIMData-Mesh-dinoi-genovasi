@@ -301,7 +301,7 @@ esp_err_t ble_mesh_custom_sensor_client_model_message_get(){
         ctx.net_idx = prov_key.net_idx;
         ctx.app_idx = prov_key.app_idx;
         ctx.addr = nodes[i].unicast;
-        ctx.send_ttl = 3;
+        ctx.send_ttl = 7;
         ctx.send_rel = false;
         ESP_LOGI("GETOP", "address 0x%x", ctx.addr);
         err = esp_ble_mesh_client_model_send_msg(custom_sensor_client.model, &ctx, opcode, 0, NULL, 0, true, ROLE_PROVISIONER);
