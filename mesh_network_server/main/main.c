@@ -6,6 +6,8 @@
 
 
 #include "board.h"
+#include "wifi.h"
+#include "ota.h"
 
 
 void app_main(void)
@@ -27,6 +29,8 @@ void app_main(void)
 
     board_init();
 
+    wifi_init_sta();
+
     err = bluetooth_init();
     if (err) {
         ESP_LOGE(MAIN_TAG, "esp32_bluetooth_init failed (err %d)", err);
@@ -40,6 +44,8 @@ void app_main(void)
     if (err) {
         ESP_LOGE(MAIN_TAG, "Bluetooth mesh init failed (err %d)", err);
     }
+
+    xTaskCreate(&ota_task, "ota_update_task", 8192, NULL, 5, NULL);
 
     while (1) {
         lux = read_lux();
