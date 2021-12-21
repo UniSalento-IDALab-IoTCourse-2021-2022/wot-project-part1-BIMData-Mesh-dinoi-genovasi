@@ -110,12 +110,14 @@ void ota_task(void *pvParameter) {
                                          invalid_app_info.version);
                                 ESP_LOGW(TAG, "The firmware has been rolled back to the previous version.");
                                 http_cleanup(client);
+                                continue;
                             }
                         }
                         if (memcmp(new_app_info.version, running_app_info.version, sizeof(new_app_info.version)) == 0) {
                             ESP_LOGW(TAG,
                                      "Current running version is the same as a new. We will not continue the update.");
                             http_cleanup(client);
+                            continue;
                         }
 
                         image_header_was_checked = true;
@@ -125,6 +127,7 @@ void ota_task(void *pvParameter) {
                             ESP_LOGE(TAG, "esp_ota_begin failed (%s)", esp_err_to_name(err));
                             http_cleanup(client);
                             esp_ota_abort(update_handle);
+                            continue;
                             //task_fatal_error();
                         }
                         ESP_LOGI(TAG, "esp_ota_begin succeeded");
@@ -132,6 +135,7 @@ void ota_task(void *pvParameter) {
                         ESP_LOGE(TAG, "received package is not fit len");
                         http_cleanup(client);
                         esp_ota_abort(update_handle);
+                        continue;
                         //task_fatal_error();
                     }
                 }
@@ -151,11 +155,11 @@ void ota_task(void *pvParameter) {
                  */
                 if (errno == ECONNRESET || errno == ENOTCONN) {
                     ESP_LOGE(TAG, "Connection closed, errno = %d", errno);
-                    break;
+                    continue;
                 }
                 if (esp_http_client_is_complete_data_received(client) == true) {
                     ESP_LOGI(TAG, "Connection closed");
-                    break;
+                    continue;
                 }
             }
         }
