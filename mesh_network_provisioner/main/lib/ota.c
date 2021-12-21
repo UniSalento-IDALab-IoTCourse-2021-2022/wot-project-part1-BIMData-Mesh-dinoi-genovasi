@@ -165,8 +165,7 @@ void ota_task(void *pvParameter) {
         }
         ESP_LOGI(TAG, "Total Write binary data length: %d", binary_file_length);
         if (esp_http_client_is_complete_data_received(client) != true) {
-            ESP_LOGE(TAG, "Error in receiving complete file");
-            //http_cleanup(client);
+            ESP_LOGW(TAG, "Error in receiving complete file");
             esp_ota_abort(update_handle);
             continue;
         }
