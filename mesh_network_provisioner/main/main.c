@@ -15,7 +15,7 @@ void app_main(void)
         ESP_LOGE(MAIN_TAG, "NVS init erorr %d", error);
     }
 
-    ESP_LOGI(MAIN_TAG,"OTA VERSION 4");
+    ESP_LOGI(MAIN_TAG,"OTA VERSION 5");
 
     wifi_init_sta();
 
