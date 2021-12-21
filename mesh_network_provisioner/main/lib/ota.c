@@ -139,6 +139,7 @@ void ota_task(void *pvParameter) {
                 if (err != ESP_OK) {
                     http_cleanup(client);
                     esp_ota_abort(update_handle);
+                    ESP_LOGE(TAG,"Error during write");
                     //task_fatal_error();
                 }
                 binary_file_length += data_read;
