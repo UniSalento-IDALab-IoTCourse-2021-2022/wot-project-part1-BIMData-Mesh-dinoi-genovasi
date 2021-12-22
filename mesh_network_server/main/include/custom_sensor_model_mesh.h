@@ -18,7 +18,7 @@ typedef struct __attribute__((packed)) {
     float lux;
     int temperature;
     int humidity;
-    char device_name[6];
+    char device_name[7];
 } model_sensors_data_t;
 
 typedef struct __attribute__((packed)) {
