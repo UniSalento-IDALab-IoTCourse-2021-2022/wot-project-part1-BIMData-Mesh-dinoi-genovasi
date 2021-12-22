@@ -13,6 +13,8 @@
 
 
 #define CID_ESP 0x02E5
+//   DEVICE_ID defined in CMakeLists.txt macros and CMake options (usb-1 ... usb-4)
+#define DEVICE_ID "server-node"
 
 static uint8_t dev_uuid[16] = {0xdd, 0xdd};
 
