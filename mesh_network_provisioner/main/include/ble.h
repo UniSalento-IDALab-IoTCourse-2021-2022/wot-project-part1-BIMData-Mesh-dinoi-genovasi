@@ -12,11 +12,6 @@
 #define REMOTE_NOTIFY_CHAR_UUID    0xFF01
 #define INVALID_HANDLE   0
 
-//static const char remote_device_name[] = "ESP_GATTS_DEMO";
-static bool connect    = false;
-static bool get_server = false;
-
-/* Declare static functions */
 static void esp_gap_cb(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *param);
 
 static esp_bt_uuid_t remote_filter_service_uuid = {
