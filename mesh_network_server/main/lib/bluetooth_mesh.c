@@ -1,3 +1,4 @@
+#include <esp_gap_ble_api.h>
 #include "bluetooth_mesh.h"
 
 #define BLUETOOTH_MESH_TAG "BLE_MESH"
@@ -32,6 +33,10 @@ static void prov_complete(uint16_t net_idx, uint16_t addr, uint8_t flags, uint32
 {
     ESP_LOGI(BLUETOOTH_MESH_TAG, "net_idx 0x%03x, addr 0x%04x", net_idx, addr);
     ESP_LOGI(BLUETOOTH_MESH_TAG, "flags 0x%02x, iv_index 0x%08x", flags, iv_index);
+
+    //the unit of the duration is second
+    uint32_t duration = 0; //if 0 scan forever
+    esp_ble_gap_start_scanning(duration);
 }
 
 static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_mesh_prov_cb_param_t *param) {
@@ -116,6 +121,21 @@ void custom_sensors_server_callback(esp_ble_mesh_model_cb_event_t event, esp_ble
                                  ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS);
                     }
                     break;
+                case ESP_BLE_MESH_IBEACON_MODEL_OP_GET:;
+                    model_ibeacon_data_t ibeacon_resp = *(model_ibeacon_data_t *) param->model_operation.model->user_data;
+                    esp_log_buffer_hex("UUID: ", ibeacon_resp.uuid, ESP_UUID_LEN_128);
+
+                    ESP_LOGI(BLUETOOTH_MESH_TAG, "MESH MESSAGE SENT - UUID: %s, MAJOR: %hu, MINOR: %d, RSSI: %d\n",
+                             (ibeacon_resp.uuid), ibeacon_resp.major, ibeacon_resp.minor, ibeacon_resp.rssi);
+                    esp_err_t ib_err = esp_ble_mesh_server_model_send_msg(param->model_operation.model,
+                                                                       param->model_operation.ctx,
+                                                                       ESP_BLE_MESH_IBEACON_MODEL_OP_STATUS,
+                                                                       sizeof(ibeacon_resp), (uint8_t *) &ibeacon_resp);
+                    if (ib_err) {
+                        ESP_LOGE(BLUETOOTH_MESH_TAG, "Failed to send message 0x%06x",
+                                 ESP_BLE_MESH_IBEACON_MODEL_OP_STATUS);
+                    }
+                    break;
                 default:
                     break;
             }
@@ -130,4 +150,11 @@ void update_state(float lux, int hum, int temp) {
     _server_model_state.lux = lux;
     _server_model_state.temperature = temp;
 
+}
+
+void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rssi) {
+    memcpy(uuid, _ibeacon_model_state.uuid, 16);
+    _ibeacon_model_state.major = major;
+    _ibeacon_model_state.major = minor;
+    _ibeacon_model_state.major = rssi;
 }

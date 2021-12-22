@@ -9,6 +9,7 @@
 #include <string.h>
 #include <esp_bt_device.h>
 #include "custom_sensor_model_mesh.h"
+#include "ibeacon_model_mesh.h"
 #include <esp_ble_mesh_networking_api.h>
 
 
@@ -49,10 +50,21 @@ static esp_ble_mesh_model_op_t custom_sensor_op[] = {
         ESP_BLE_MESH_MODEL_OP_END,
 };
 
+static esp_ble_mesh_model_op_t ibeacon_op[] = {
+        ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_IBEACON_MODEL_OP_GET, 0),  // OP_GET no minimo 0 bytes
+        ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_IBEACON_MODEL_OP_SET, 4),  // OP_SET no minimo 4 bytes
+        ESP_BLE_MESH_MODEL_OP_END,
+};
+
 static model_sensors_data_t _server_model_state = {.device_name = DEVICE_ID,.temperature=0,.humidity=0, .lux = 0.0};
 
+static model_ibeacon_data_t _ibeacon_model_state = {.uuid ={}, .major =0, .minor=0, .rssi=0};
+
+
 static esp_ble_mesh_model_t custom_models[]={
-        ESP_BLE_MESH_VENDOR_MODEL(CID_ESP,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_SERVER,custom_sensor_op,NULL,&_server_model_state)
+//        ESP_BLE_MESH_VENDOR_MODEL(CID_ESP, ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_SERVER,custom_sensor_op, NULL,&_server_model_state),
+        ESP_BLE_MESH_VENDOR_MODEL(CID_ESP, ESP_BLE_MESH_IBEACON_MODEL_ID_SERVER,ibeacon_op, NULL,&_ibeacon_model_state)
+
 };
 
 static esp_ble_mesh_elem_t elements[] = {
@@ -88,5 +100,7 @@ static esp_ble_mesh_comp_t composition = {
 void ble_mesh_get_dev_uuid();
 
 void update_state(float lux, int hum, int temp);
+
+void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rssi);
 
 #endif //TEST_MESH_NETWORK_BLUETOOTH_MESH_H
