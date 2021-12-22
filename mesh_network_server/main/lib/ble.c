@@ -6,8 +6,8 @@ static void esp_gap_cb(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *par
     switch (event) {
         case ESP_GAP_BLE_SCAN_PARAM_SET_COMPLETE_EVT: {
             //the unit of the duration is second
-//            uint32_t duration = 0; //if 0 scan forever
-//            esp_ble_gap_start_scanning(duration);
+            uint32_t duration = 0; //if 0 scan forever
+            esp_ble_gap_start_scanning(duration);
             break;
         }
         case ESP_GAP_BLE_SCAN_START_COMPLETE_EVT:
@@ -106,16 +106,16 @@ esp_err_t bluetooth_init(void){
     }
 
     //register the  callback function to the gap module
-//    ret = esp_ble_gap_register_callback(esp_gap_cb);
-//    if (ret){
-//        ESP_LOGE(GATTC_TAG, "%s gap register failed, error code = %x\n", __func__, ret);
-//        return ret;
-//    }
-//    ret = esp_ble_gap_set_scan_params(&ble_scan_params);
-//    if(ret){
-//        ESP_LOGE(GATTC_TAG,"Oh nooo\n");
-//        return ret;
-//    }
+    ret = esp_ble_gap_register_callback(esp_gap_cb);
+    if (ret){
+        ESP_LOGE(GATTC_TAG, "%s gap register failed, error code = %x\n", __func__, ret);
+        return ret;
+    }
+    ret = esp_ble_gap_set_scan_params(&ble_scan_params);
+    if(ret){
+        ESP_LOGE(GATTC_TAG,"Oh nooo\n");
+        return ret;
+    }
 
     ESP_LOGI(BLE_TAG,"BT (BLE MODE) init complete");
     return ret;
