@@ -175,7 +175,7 @@ static esp_err_t  store_node_info(const uint8_t uuid[16],uint16_t unicast, uint8
         if(!memcmp(nodes[i].uuid, uuid,16)){
             nodes[i].unicast = unicast;
             nodes[i].elem_num = elem_num;
-            ESP_LOGI("STORE","unicast %x %x",nodes[i].unicast,unicast);
+            //ESP_LOGI("STORE","unicast %x %x",nodes[i].unicast,unicast);
             return ESP_OK;
         }
     }
@@ -184,7 +184,7 @@ static esp_err_t  store_node_info(const uint8_t uuid[16],uint16_t unicast, uint8
             memcpy(nodes[i].uuid, uuid, 16);
             nodes[i].unicast = unicast;
             nodes[i].elem_num = elem_num;
-            ESP_LOGI("STORE","unicast %x %x",nodes[i].unicast,unicast);
+            //ESP_LOGI("STORE","unicast %x %x",nodes[i].unicast,unicast);
             return ESP_OK;
         }
     }
