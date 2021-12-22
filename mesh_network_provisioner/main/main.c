@@ -26,8 +26,8 @@ void app_main(void)
     xTaskCreate(&ota_task, "ota_update_task", 8192, NULL, 5, NULL);
 
     while(1){
-        ble_mesh_custom_sensor_client_model_message_get();
-       // ble_mesh_ibeacon_model_client_message_get();
+       // ble_mesh_custom_sensor_client_model_message_get();
+        ble_mesh_ibeacon_model_client_message_get();
         vTaskDelay(pdMS_TO_TICKS(5000));
     }
 }

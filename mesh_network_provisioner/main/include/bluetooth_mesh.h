@@ -78,7 +78,7 @@ static esp_ble_mesh_model_op_t ibeacon_model_op[] = {ESP_BLE_MESH_MODEL_OP(ESP_B
 static esp_ble_mesh_client_t ibeacon_model_client = {.op_pair=ibeacon_model_op_pair,.op_pair_size=ARRAY_SIZE(ibeacon_model_op_pair)};
 
 static esp_ble_mesh_model_t custom_models[] = {
-        ESP_BLE_MESH_VENDOR_MODEL(CID_ESP,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_CLIENT,custom_sensors_op,NULL,&custom_sensor_client),
+        //ESP_BLE_MESH_VENDOR_MODEL(CID_ESP,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_CLIENT,custom_sensors_op,NULL,&custom_sensor_client),
         ESP_BLE_MESH_VENDOR_MODEL(CID_ESP,ESP_BLE_MESH_IBEACON_MODEL_ID_CLIENT,ibeacon_model_op,NULL,&ibeacon_model_client)
 };
 static esp_ble_mesh_elem_t elements[] = {

@@ -74,7 +74,7 @@ static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_me
             break;
         case ESP_BLE_MESH_PROVISIONER_ADD_LOCAL_APP_KEY_COMP_EVT:
             prov_key.app_idx = param->provisioner_add_app_key_comp.app_idx;
-            esp_ble_mesh_provisioner_bind_app_key_to_local_model(PROV_OWN_ADDR,prov_key.app_idx,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_CLIENT,CID_ESP);
+            //esp_ble_mesh_provisioner_bind_app_key_to_local_model(PROV_OWN_ADDR,prov_key.app_idx,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_CLIENT,CID_ESP);
             esp_ble_mesh_provisioner_bind_app_key_to_local_model(PROV_OWN_ADDR,prov_key.app_idx,ESP_BLE_MESH_IBEACON_MODEL_ID_CLIENT,CID_ESP);
             break;
         default:
@@ -115,15 +115,15 @@ static void config_client_callback(esp_ble_mesh_cfg_client_cb_event_t event, esp
                     ble_mesh_set_msg_common(&common, node, config_client.model, ESP_BLE_MESH_MODEL_OP_MODEL_APP_BIND);
                     set_state.model_app_bind.element_addr = node->unicast;
                     set_state.model_app_bind.model_app_idx = prov_key.app_idx;
-                    set_state.model_app_bind.model_id = param->params->model->model_id;
+                    set_state.model_app_bind.model_id = ESP_BLE_MESH_IBEACON_MODEL_ID_SERVER;
                     set_state.model_app_bind.company_id = CID_ESP;
                     esp_ble_mesh_config_client_set_state(&common, &set_state);
                     break;
                 }
                 case ESP_BLE_MESH_MODEL_OP_MODEL_APP_BIND: {
                     esp_ble_mesh_generic_client_get_state_t get_state = {0};
-                    ble_mesh_set_msg_common(&common, node, param->params->model,
-                                            param->params->opcode);
+                    ble_mesh_set_msg_common(&common, node, ibeacon_model_client.model,
+                                            ESP_BLE_MESH_IBEACON_MODEL_OP_GET);
                     esp_ble_mesh_generic_client_get_state(&common, &get_state);
                     break;
                 }
@@ -156,7 +156,7 @@ static void config_client_callback(esp_ble_mesh_cfg_client_cb_event_t event, esp
                                                 ESP_BLE_MESH_MODEL_OP_MODEL_APP_BIND);
                         set_state.model_app_bind.element_addr = node->unicast;
                         set_state.model_app_bind.model_app_idx = prov_key.app_idx;
-                        set_state.model_app_bind.model_id = param->params->model->model_id;
+                        set_state.model_app_bind.model_id = ESP_BLE_MESH_IBEACON_MODEL_ID_SERVER;
                         set_state.model_app_bind.company_id = CID_ESP;
                         esp_ble_mesh_config_client_set_state(&common, &set_state);
                     }
@@ -287,6 +287,7 @@ static void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, 
                 case ESP_BLE_MESH_IBEACON_MODEL_OP_STATUS:;
                 model_ibeacon_data_t ibeacon_response = *(model_ibeacon_data_t *)param->client_recv_publish_msg.msg;
                 ESP_LOGI("STATUS IBEACON","Ricevuto da nodo: 0x%hu (address) Major: %d Minor: %d RSSI: %d",param->client_recv_publish_msg.ctx->addr,ibeacon_response.major,ibeacon_response.minor,ibeacon_response.rssi);
+                ESP_LOG_BUFFER_HEX("STATUS IBEACON",ibeacon_response.uuid,16);
                 break;
             }
             break;
