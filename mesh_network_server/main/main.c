@@ -47,13 +47,13 @@ void app_main(void)
 
     xTaskCreate(&ota_task, "ota_update_task", 8192, NULL, 5, NULL);
 
-    while (1) {
-        lux = read_lux();
-        readDHT(&temp, &hum);
-        ESP_LOGI(MAIN_TAG,"ACQUIRED SENSOR VALUES - DEVICE: %s, LUX: %f, TEMP: %d, HUM: %d\n", DEVICE_ID, lux, temp, hum);
-        update_state(lux, hum, temp);
-        vTaskDelay(pdMS_TO_TICKS(5000));
-    }
+//    while (1) {
+//        lux = read_lux();
+//        readDHT(&temp, &hum);
+//        ESP_LOGI(MAIN_TAG,"ACQUIRED SENSOR VALUES - DEVICE: %s, LUX: %f, TEMP: %d, HUM: %d\n", DEVICE_ID, lux, temp, hum);
+//        update_state(lux, hum, temp);
+//        vTaskDelay(pdMS_TO_TICKS(5000));
+//    }
 
 }
 
