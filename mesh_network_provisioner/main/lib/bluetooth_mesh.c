@@ -281,7 +281,7 @@ static void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, 
             switch(param->model_operation.opcode){
                 case ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS:;
                     model_sensors_data_t response = *(model_sensors_data_t *)param->client_recv_publish_msg.msg;
-                    ESP_LOGI("STATUS","Ricevuto da nodo: %s temp: %d hum: %d lux %f",response.device_name,response.temperature,response.humidity,response.lux);
+                    ESP_LOGI("STATUS","Ricevuto da nodo: 0x%hu (address) temp: %d hum: %d lux %f",param->client_recv_publish_msg.ctx->addr,response.temperature,response.humidity,response.lux);
                     break;
             }
             break;
@@ -303,7 +303,7 @@ esp_err_t ble_mesh_custom_sensor_client_model_message_get(){
         ctx.addr = nodes[i].unicast;
         ctx.send_ttl = 7;
         ctx.send_rel = false;
-        ESP_LOGI("GETOP", "address 0x%x", ctx.addr);
+        //ESP_LOGI("GETOP", "address 0x%x", ctx.addr);
         err = esp_ble_mesh_client_model_send_msg(custom_sensor_client.model, &ctx, opcode, 0, NULL, 0, true, ROLE_PROVISIONER);
         if (err != ESP_OK)
             ESP_LOGE("SEND_GET", "Sending error\n");
