@@ -4,6 +4,11 @@
 #define HASH_LEN 32 /* SHA-256 digest length */
 
 #define TAG "OTA"
+
+#define ESP_LOGI(fmt, ...) (0)
+#define ESP_LOGE(fmt, ...) (0)
+#define ESP_LOGW(fmt, ...) (0)
+
 /*an ota data write buffer ready to write to the flash*/
 static char ota_write_data[BUFFSIZE + 1] = {0};
 
