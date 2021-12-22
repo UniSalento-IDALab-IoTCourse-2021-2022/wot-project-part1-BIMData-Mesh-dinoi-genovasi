@@ -28,12 +28,12 @@ esp_err_t bluetooth_init(void){
         return ret;
     }
 
-   // ret = esp_ble_gap_register_callback(esp_gap_cb);
+  //  ret = esp_ble_gap_register_callback(esp_gap_cb);
     if (ret){
         ESP_LOGE(BLE_TAG, "%s gap register failed, error code = %x\n", __func__, ret);
         return ret;
     }
-    ret = esp_ble_gap_set_scan_params(&ble_scan_params);
+   // ret = esp_ble_gap_set_scan_params(&ble_scan_params);
     if(ret){
         ESP_LOGE(BLE_TAG,"Oh nooo\n");
         return ret;
@@ -48,6 +48,8 @@ static void esp_gap_cb(esp_gap_ble_cb_event_t event, esp_ble_gap_cb_param_t *par
     switch (event) {
         case ESP_GAP_BLE_SCAN_PARAM_SET_COMPLETE_EVT: {
             //the unit of the duration is second
+            //uint32_t duration = 10;
+           // esp_ble_gap_start_scan(duration);
             break;
         }
         case ESP_GAP_BLE_SCAN_START_COMPLETE_EVT:
