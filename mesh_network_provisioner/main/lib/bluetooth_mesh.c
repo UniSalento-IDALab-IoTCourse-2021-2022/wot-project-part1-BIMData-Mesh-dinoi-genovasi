@@ -123,7 +123,7 @@ static void config_client_callback(esp_ble_mesh_cfg_client_cb_event_t event, esp
                 case ESP_BLE_MESH_MODEL_OP_MODEL_APP_BIND: {
                     esp_ble_mesh_generic_client_get_state_t get_state = {0};
                     ble_mesh_set_msg_common(&common, node, param->params->model,
-                                            param->params->ctx.model->op);
+                                            param->params->opcode);
                     esp_ble_mesh_generic_client_get_state(&common, &get_state);
                     break;
                 }
@@ -156,7 +156,7 @@ static void config_client_callback(esp_ble_mesh_cfg_client_cb_event_t event, esp
                                                 ESP_BLE_MESH_MODEL_OP_MODEL_APP_BIND);
                         set_state.model_app_bind.element_addr = node->unicast;
                         set_state.model_app_bind.model_app_idx = prov_key.app_idx;
-                        set_state.model_app_bind.model_id = ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_SERVER;
+                        set_state.model_app_bind.model_id = param->params->model->model_id;
                         set_state.model_app_bind.company_id = CID_ESP;
                         esp_ble_mesh_config_client_set_state(&common, &set_state);
                     }
