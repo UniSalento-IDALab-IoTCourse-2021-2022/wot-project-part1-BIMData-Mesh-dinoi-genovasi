@@ -92,6 +92,7 @@ static void config_client_callback(esp_ble_mesh_cfg_client_cb_event_t event, esp
 static void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param);
 static void recv_unprov_adv_pkt(uint8_t dev_uuid[16], uint8_t addr[BD_ADDR_LEN], esp_ble_mesh_addr_type_t addrType, uint16_t oob_info, uint8_t adv_type, esp_ble_mesh_prov_bearer_t bearer);
 esp_err_t ble_mesh_custom_sensor_client_model_message_get(void);
+esp_err_t ble_mesh_ibeacon_model_client_message_get(void);
 static esp_ble_mesh_node_info_t *ble_mesh_get_node_info(uint16_t unicast_addr);
 static esp_err_t ble_mesh_set_msg_common(esp_ble_mesh_client_common_param_t *common, esp_ble_mesh_node_info_t *node, esp_ble_mesh_model_t *model, uint32_t opcode);
 

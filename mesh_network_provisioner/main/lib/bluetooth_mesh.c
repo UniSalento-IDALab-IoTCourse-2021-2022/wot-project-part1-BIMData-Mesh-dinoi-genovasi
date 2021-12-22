@@ -75,6 +75,7 @@ static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_me
         case ESP_BLE_MESH_PROVISIONER_ADD_LOCAL_APP_KEY_COMP_EVT:
             prov_key.app_idx = param->provisioner_add_app_key_comp.app_idx;
             esp_ble_mesh_provisioner_bind_app_key_to_local_model(PROV_OWN_ADDR,prov_key.app_idx,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_CLIENT,CID_ESP);
+            esp_ble_mesh_provisioner_bind_app_key_to_local_model(PROV_OWN_ADDR,prov_key.app_idx,ESP_BLE_MESH_IBEACON_MODEL_ID_CLIENT,CID_ESP);
             break;
         default:
             break;
@@ -114,15 +115,15 @@ static void config_client_callback(esp_ble_mesh_cfg_client_cb_event_t event, esp
                     ble_mesh_set_msg_common(&common, node, config_client.model, ESP_BLE_MESH_MODEL_OP_MODEL_APP_BIND);
                     set_state.model_app_bind.element_addr = node->unicast;
                     set_state.model_app_bind.model_app_idx = prov_key.app_idx;
-                    set_state.model_app_bind.model_id = ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_SERVER;
+                    set_state.model_app_bind.model_id = param->params->model->model_id;
                     set_state.model_app_bind.company_id = CID_ESP;
                     esp_ble_mesh_config_client_set_state(&common, &set_state);
                     break;
                 }
                 case ESP_BLE_MESH_MODEL_OP_MODEL_APP_BIND: {
                     esp_ble_mesh_generic_client_get_state_t get_state = {0};
-                    ble_mesh_set_msg_common(&common, node, custom_sensor_client.model,
-                                            ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_GET);
+                    ble_mesh_set_msg_common(&common, node, param->params->model,
+                                            param->params->ctx.model->op);
                     esp_ble_mesh_generic_client_get_state(&common, &get_state);
                     break;
                 }
@@ -281,8 +282,12 @@ static void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, 
             switch(param->model_operation.opcode){
                 case ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS:;
                     model_sensors_data_t response = *(model_sensors_data_t *)param->client_recv_publish_msg.msg;
-                    ESP_LOGI("STATUS","Ricevuto da nodo: 0x%hu (address) temp: %d hum: %d lux %f",param->client_recv_publish_msg.ctx->addr,response.temperature,response.humidity,response.lux);
+                    ESP_LOGI("STATUS SENSOR","Ricevuto da nodo: 0x%hu (address) temp: %d hum: %d lux %f",param->client_recv_publish_msg.ctx->addr,response.temperature,response.humidity,response.lux);
                     break;
+                case ESP_BLE_MESH_IBEACON_MODEL_OP_STATUS:;
+                model_ibeacon_data_t ibeacon_response = *(model_ibeacon_data_t *)param->client_recv_publish_msg.msg;
+                ESP_LOGI("STATUS IBEACON","Ricevuto da nodo: 0x%hu (address) Major: %d Minor: %d RSSI: %d",param->client_recv_publish_msg.ctx->addr,ibeacon_response.major,ibeacon_response.minor,ibeacon_response.rssi);
+                break;
             }
             break;
         default:
@@ -305,6 +310,27 @@ esp_err_t ble_mesh_custom_sensor_client_model_message_get(){
         ctx.send_rel = false;
         //ESP_LOGI("GETOP", "address 0x%x", ctx.addr);
         err = esp_ble_mesh_client_model_send_msg(custom_sensor_client.model, &ctx, opcode, 0, NULL, 0, true, ROLE_PROVISIONER);
+        if (err != ESP_OK)
+            ESP_LOGE("SEND_GET", "Sending error\n");
+    }
+    return err;
+}
+
+esp_err_t ble_mesh_ibeacon_model_client_message_get(){
+    esp_ble_mesh_msg_ctx_t ctx = {0};
+    uint32_t opcode;
+    esp_err_t err = ESP_OK;
+    opcode = ESP_BLE_MESH_IBEACON_MODEL_OP_GET;
+    for (int i = 0; i < ARRAY_SIZE(nodes); i++) {
+        if (nodes[i].unicast == ESP_BLE_MESH_ADDR_UNASSIGNED)
+            return ESP_OK;
+        ctx.net_idx = prov_key.net_idx;
+        ctx.app_idx = prov_key.app_idx;
+        ctx.addr = nodes[i].unicast;
+        ctx.send_ttl = 7;
+        ctx.send_rel = false;
+        //ESP_LOGI("GETOP", "address 0x%x", ctx.addr);
+        err = esp_ble_mesh_client_model_send_msg(ibeacon_model_client.model, &ctx, opcode, 0, NULL, 0, true, ROLE_PROVISIONER);
         if (err != ESP_OK)
             ESP_LOGE("SEND_GET", "Sending error\n");
     }
