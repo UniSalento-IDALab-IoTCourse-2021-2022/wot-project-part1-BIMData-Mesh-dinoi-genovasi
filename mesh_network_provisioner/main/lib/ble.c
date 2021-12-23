@@ -27,7 +27,7 @@ esp_err_t bluetooth_init(void){
         ESP_LOGE(BLE_TAG, "%s enable bluetooth failed", __func__);
         return ret;
     }
+
     ESP_LOGI(BLE_TAG,"BT (BLE MODE) init complete");
     return ret;
 }
-
