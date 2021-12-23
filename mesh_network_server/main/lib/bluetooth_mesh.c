@@ -1,4 +1,7 @@
+#include <esp_gap_ble_api.h>
+#include <scan.h>
 #include "bluetooth_mesh.h"
+#include "esp_ibeacon_api.h"
 
 #define BLUETOOTH_MESH_TAG "BLE_MESH"
 
@@ -12,6 +15,10 @@ esp_err_t ble_mesh_init() {
     esp_ble_mesh_register_config_server_callback(config_server_callback);
     esp_ble_mesh_register_custom_model_callback(custom_sensors_server_callback);
 
+    esp_ble_mesh_register_ble_callback(ble_mesh_scan_cb);
+
+
+
     err = esp_ble_mesh_init(&provision, &composition);
     if (err != ESP_OK) {
         ESP_LOGE(BLUETOOTH_MESH_TAG, "Failed to initialize mesh stack");
@@ -23,6 +30,10 @@ esp_err_t ble_mesh_init() {
         ESP_LOGE(BLUETOOTH_MESH_TAG, "Failed to enable mesh node");
         return err;
     }
+
+    struct bt_mesh_ble_scan_param sparam;
+    sparam.duration = 5;
+    bt_mesh_start_ble_scan(&sparam);
 
     ESP_LOGI(BLUETOOTH_MESH_TAG, "BLE Mesh Node initialization complete");
     return ESP_OK;
@@ -116,6 +127,21 @@ void custom_sensors_server_callback(esp_ble_mesh_model_cb_event_t event, esp_ble
                                  ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS);
                     }
                     break;
+                case ESP_BLE_MESH_IBEACON_MODEL_OP_GET:;
+                    model_ibeacon_data_t ibeacon_resp = *(model_ibeacon_data_t *) param->model_operation.model->user_data;
+                    esp_log_buffer_hex("UUID: ", ibeacon_resp.uuid, ESP_UUID_LEN_128);
+
+                    ESP_LOGI(BLUETOOTH_MESH_TAG, "MESH MESSAGE SENT - MAJOR: %hu, MINOR: %d, RSSI: %d\n",
+                             ibeacon_resp.major, ibeacon_resp.minor, ibeacon_resp.rssi);
+                    esp_err_t ib_err = esp_ble_mesh_server_model_send_msg(param->model_operation.model,
+                                                                       param->model_operation.ctx,
+                                                                       ESP_BLE_MESH_IBEACON_MODEL_OP_STATUS,
+                                                                       sizeof(ibeacon_resp), (uint8_t *) &ibeacon_resp);
+                    if (ib_err) {
+                        ESP_LOGE(BLUETOOTH_MESH_TAG, "Failed to send message 0x%06x",
+                                 ESP_BLE_MESH_IBEACON_MODEL_OP_STATUS);
+                    }
+                    break;
                 default:
                     break;
             }
@@ -125,9 +151,38 @@ void custom_sensors_server_callback(esp_ble_mesh_model_cb_event_t event, esp_ble
     }
 }
 
+
+
+static void ble_mesh_scan_cb(esp_ble_mesh_ble_cb_event_t event, esp_ble_mesh_ble_cb_param_t *param) {
+    if(esp_ble_is_ibeacon_packet(param->scan_ble_adv_pkt.data, param->scan_ble_adv_pkt.length)){
+
+        esp_ble_ibeacon_t *beacon_data= (esp_ble_ibeacon_t *) param->scan_ble_adv_pkt.data;
+        ESP_LOGI("IBEACON SCAN","----- TROVATO IL BEACON ----");
+        esp_log_buffer_hex("UUID: ",beacon_data->ibeacon_vendor.proximity_uuid,ESP_UUID_LEN_128);
+        ESP_LOGI("IBEACON SCAN","Measured Power: %d",beacon_data->ibeacon_vendor.measured_power);
+
+        uint16_t major = ENDIAN_CHANGE_U16(beacon_data->ibeacon_vendor.major);
+        uint16_t minor = ENDIAN_CHANGE_U16(beacon_data->ibeacon_vendor.minor);
+
+        ESP_LOGI("IBEACON SCAN","Major: %d Minor: %d",major,minor);
+        ESP_LOGI("IBEACON SCAN","RSSI: %d", param->scan_ble_adv_pkt.rssi);
+        ESP_LOGI("IBEACON SCAN","\n");
+
+        update_ibeacon_state(beacon_data->ibeacon_vendor.proximity_uuid, major, minor, param->scan_ble_adv_pkt.rssi);
+    }
+
+}
+
 void update_state(float lux, int hum, int temp) {
     _server_model_state.humidity = hum;
     _server_model_state.lux = lux;
     _server_model_state.temperature = temp;
 
+}
+
+void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rssi) {
+    memcpy(_ibeacon_model_state.uuid, uuid, 16);
+    _ibeacon_model_state.major = major;
+    _ibeacon_model_state.minor = minor;
+    _ibeacon_model_state.rssi = rssi;
 }

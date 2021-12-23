@@ -9,10 +9,13 @@
 #include <string.h>
 #include <esp_bt_device.h>
 #include "custom_sensor_model_mesh.h"
+#include "ibeacon_model_mesh.h"
 #include <esp_ble_mesh_networking_api.h>
 
 
 #define CID_ESP 0x02E5
+//   DEVICE_ID defined in CMakeLists.txt macros and CMake options (usb-1 ... usb-4)
+#define DEVICE_ID "server"
 
 static uint8_t dev_uuid[16] = {0xdd, 0xdd};
 
@@ -47,10 +50,21 @@ static esp_ble_mesh_model_op_t custom_sensor_op[] = {
         ESP_BLE_MESH_MODEL_OP_END,
 };
 
+static esp_ble_mesh_model_op_t ibeacon_op[] = {
+        ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_IBEACON_MODEL_OP_GET, 0),  // OP_GET no minimo 0 bytes
+        ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_IBEACON_MODEL_OP_SET, 4),  // OP_SET no minimo 4 bytes
+        ESP_BLE_MESH_MODEL_OP_END,
+};
+
 static model_sensors_data_t _server_model_state = {.device_name = DEVICE_ID,.temperature=0,.humidity=0, .lux = 0.0};
 
+static model_ibeacon_data_t _ibeacon_model_state = {.uuid ={}, .major =0, .minor=0, .rssi=0};
+
+
 static esp_ble_mesh_model_t custom_models[]={
-        ESP_BLE_MESH_VENDOR_MODEL(CID_ESP,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_SERVER,custom_sensor_op,NULL,&_server_model_state)
+//        ESP_BLE_MESH_VENDOR_MODEL(CID_ESP, ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_SERVER,custom_sensor_op, NULL,&_server_model_state),
+        ESP_BLE_MESH_VENDOR_MODEL(CID_ESP, ESP_BLE_MESH_IBEACON_MODEL_ID_SERVER,ibeacon_op, NULL,&_ibeacon_model_state)
+
 };
 
 static esp_ble_mesh_elem_t elements[] = {
@@ -63,6 +77,7 @@ static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_me
 static void prov_complete(uint16_t net_idx, uint16_t addr, uint8_t flags, uint32_t iv_index);
 void config_server_callback(esp_ble_mesh_cfg_server_cb_event_t event, esp_ble_mesh_cfg_server_cb_param_t *param);
 void custom_sensors_server_callback(esp_ble_mesh_model_cb_event_t event,esp_ble_mesh_model_cb_param_t *param);
+static void ble_mesh_scan_cb(esp_ble_mesh_ble_cb_event_t event, esp_ble_mesh_ble_cb_param_t *param);
 
 static esp_ble_mesh_prov_t provision = {
         .uuid = dev_uuid,
@@ -86,5 +101,7 @@ static esp_ble_mesh_comp_t composition = {
 void ble_mesh_get_dev_uuid();
 
 void update_state(float lux, int hum, int temp);
+
+void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rssi);
 
 #endif //TEST_MESH_NETWORK_BLUETOOTH_MESH_H
