@@ -11,6 +11,8 @@
 #include "custom_sensor_model_mesh.h"
 #include <esp_ble_mesh_networking_api.h>
 #include "ibeacon_model_mesh.h"
+#include "scan.h"
+#include "esp_ibeacon_api.h"
 
 #define CID_ESP 0x02E5
 #define MSG_SEND_TTL        3
@@ -95,6 +97,7 @@ esp_err_t ble_mesh_custom_sensor_client_model_message_get(void);
 esp_err_t ble_mesh_ibeacon_model_client_message_get(void);
 static esp_ble_mesh_node_info_t *ble_mesh_get_node_info(uint16_t unicast_addr);
 static esp_err_t ble_mesh_set_msg_common(esp_ble_mesh_client_common_param_t *common, esp_ble_mesh_node_info_t *node, esp_ble_mesh_model_t *model, uint32_t opcode);
+static void ble_mesh_scan_cb(esp_ble_mesh_ble_cb_event_t event, esp_ble_mesh_ble_cb_param_t *param);
 
 static esp_ble_mesh_prov_t provision = {
         .prov_uuid = dev_uuid,

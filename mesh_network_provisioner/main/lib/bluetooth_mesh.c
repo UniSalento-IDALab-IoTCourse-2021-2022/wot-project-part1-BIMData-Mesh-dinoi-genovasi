@@ -53,6 +53,11 @@ esp_err_t ble_mesh_init(){
         return ret;
     }
 
+    esp_ble_mesh_register_ble_callback(ble_mesh_scan_cb);
+    struct bt_mesh_ble_scan_param sparam;
+    sparam.duration = 5; //this has no effect.. not implemented in scan.h..
+    bt_mesh_start_ble_scan(&sparam);
+
     ESP_LOGI("MESH_INIT","Mesh Init Complete");
 
     return ret;
@@ -336,4 +341,20 @@ esp_err_t ble_mesh_ibeacon_model_client_message_get(){
             ESP_LOGE("SEND_GET", "Sending error\n");
     }
     return err;
+}
+
+static void ble_mesh_scan_cb(esp_ble_mesh_ble_cb_event_t event, esp_ble_mesh_ble_cb_param_t *param){
+    if(esp_ble_is_ibeacon_packet(param->scan_ble_adv_pkt.data,param->scan_ble_adv_pkt.length)){
+        esp_ble_ibeacon_t *beacon_data= (esp_ble_ibeacon_t *) param->scan_ble_adv_pkt.data;
+        ESP_LOGI("MESH SCAN","----- TROVATO IL BEACON ----");
+                esp_log_buffer_hex("UUID: ",beacon_data->ibeacon_vendor.proximity_uuid,ESP_UUID_LEN_128);
+        ESP_LOGI("MESH SCAN","Measured Power: %d",beacon_data->ibeacon_vendor.measured_power);
+
+        uint16_t major = ENDIAN_CHANGE_U16(beacon_data->ibeacon_vendor.major);
+        uint16_t minor = ENDIAN_CHANGE_U16(beacon_data->ibeacon_vendor.minor);
+
+        ESP_LOGI("MESH SCAN","Major: %d Minor: %d",major,minor);
+        ESP_LOGI("MESH SCAN","RSSI: %d",param->scan_ble_adv_pkt.rssi);
+        ESP_LOGI("MESH SCAN","\n");
+    }
 }
