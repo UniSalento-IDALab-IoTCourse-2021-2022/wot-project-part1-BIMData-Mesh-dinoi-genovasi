@@ -168,7 +168,7 @@ static void ble_mesh_scan_cb(esp_ble_mesh_ble_cb_event_t event, esp_ble_mesh_ble
         ESP_LOGI("IBEACON SCAN","RSSI: %d", param->scan_ble_adv_pkt.rssi);
         ESP_LOGI("IBEACON SCAN","\n");
 
-        update_ibeacon_state(beacon_data->ibeacon_vendor.proximity_uuid, major, minor, param->scan_ble_adv_pkt.rssi);
+        update_ibeacon_state(beacon_data->ibeacon_vendor.proximity_uuid, major, minor, param->scan_ble_adv_pkt.rssi, _ibeacon_model_state.readCntr);
     }
 
 }
@@ -185,5 +185,5 @@ void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rss
     _ibeacon_model_state.major = major;
     _ibeacon_model_state.minor = minor;
     _ibeacon_model_state.rssi = rssi;
-    _ibeacon_model_state.readCntr = readcnt;
+    _ibeacon_model_state.readCntr = readcnt++;
 }
