@@ -16,6 +16,7 @@ typedef struct __attribute__((packed)){
     uint16_t major;
     uint16_t minor;
     int rssi;
+    int counter;
 } model_ibeacon_data_t;
 
 #endif //MESH_NETWORK_PROVISIONER_IBEACON_MODEL_MESH_H
