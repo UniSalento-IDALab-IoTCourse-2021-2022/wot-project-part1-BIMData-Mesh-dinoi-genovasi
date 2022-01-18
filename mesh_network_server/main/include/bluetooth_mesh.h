@@ -102,6 +102,6 @@ void ble_mesh_get_dev_uuid();
 
 void update_state(float lux, int hum, int temp);
 
-void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rssi, int readcnt);
+void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rssi);
 
 #endif //TEST_MESH_NETWORK_BLUETOOTH_MESH_H
