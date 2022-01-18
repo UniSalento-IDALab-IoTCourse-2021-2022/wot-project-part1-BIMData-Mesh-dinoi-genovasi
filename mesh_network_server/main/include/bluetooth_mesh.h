@@ -58,7 +58,7 @@ static esp_ble_mesh_model_op_t ibeacon_op[] = {
 
 static model_sensors_data_t _server_model_state = {.device_name = DEVICE_ID,.temperature=0,.humidity=0, .lux = 0.0};
 
-static model_ibeacon_data_t _ibeacon_model_state = {.uuid ={}, .major =0, .minor=0, .rssi=0};
+static model_ibeacon_data_t _ibeacon_model_state = {.uuid ={}, .major =0, .minor=0, .rssi=0, .readCntr=0};
 
 
 static esp_ble_mesh_model_t custom_models[]={
@@ -102,6 +102,6 @@ void ble_mesh_get_dev_uuid();
 
 void update_state(float lux, int hum, int temp);
 
-void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rssi);
+void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rssi, int readcnt);
 
 #endif //TEST_MESH_NETWORK_BLUETOOTH_MESH_H

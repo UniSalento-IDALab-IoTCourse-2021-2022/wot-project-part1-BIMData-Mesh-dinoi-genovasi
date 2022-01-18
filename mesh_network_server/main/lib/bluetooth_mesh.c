@@ -131,7 +131,7 @@ void custom_sensors_server_callback(esp_ble_mesh_model_cb_event_t event, esp_ble
                     model_ibeacon_data_t ibeacon_resp = *(model_ibeacon_data_t *) param->model_operation.model->user_data;
                     esp_log_buffer_hex("UUID: ", ibeacon_resp.uuid, ESP_UUID_LEN_128);
 
-                    ESP_LOGI(BLUETOOTH_MESH_TAG, "MESH MESSAGE SENT - MAJOR: %hu, MINOR: %d, RSSI: %d\n",
+                    ESP_LOGI(BLUETOOTH_MESH_TAG, "Read # %d - MESH MESSAGE SENT - MAJOR: %hu, MINOR: %d, RSSI: %d\n", ibeacon_resp.readCntr,
                              ibeacon_resp.major, ibeacon_resp.minor, ibeacon_resp.rssi);
                     esp_err_t ib_err = esp_ble_mesh_server_model_send_msg(param->model_operation.model,
                                                                        param->model_operation.ctx,
@@ -180,9 +180,10 @@ void update_state(float lux, int hum, int temp) {
 
 }
 
-void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rssi) {
+void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rssi, int readcnt) {
     memcpy(_ibeacon_model_state.uuid, uuid, 16);
     _ibeacon_model_state.major = major;
     _ibeacon_model_state.minor = minor;
     _ibeacon_model_state.rssi = rssi;
+    _ibeacon_model_state.readCntr = readcnt;
 }
