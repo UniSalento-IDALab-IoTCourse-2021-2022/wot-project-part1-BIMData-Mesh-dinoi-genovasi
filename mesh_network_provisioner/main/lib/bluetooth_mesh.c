@@ -53,11 +53,11 @@ esp_err_t ble_mesh_init(){
         return ret;
     }
 
-    esp_ble_mesh_register_ble_callback(ble_mesh_scan_cb);
+    /*esp_ble_mesh_register_ble_callback(ble_mesh_scan_cb);
     struct bt_mesh_ble_scan_param sparam;
     sparam.duration = 5; //this has no effect.. not implemented in scan.h..
     bt_mesh_start_ble_scan(&sparam);
-
+    */
     ESP_LOGI("MESH_INIT","Mesh Init Complete");
 
     return ret;
