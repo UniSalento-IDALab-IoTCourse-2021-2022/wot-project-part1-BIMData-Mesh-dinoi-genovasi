@@ -24,6 +24,7 @@ typedef struct __attribute__((packed)) {
     uint16_t major;
     uint16_t minor;
     int rssi;
+    float distance; // d = 10^( (A - RSSI) / (10*N) )
     int counter;   // Ibeacon reading counter
 } model_ibeacon_data_t;
 
