@@ -31,4 +31,5 @@ void estimate_position(){
     y = (C*D - A*F) / (B*D - A*E);
 
     ESP_LOGI("TRILAT","Estimated Beacon position: X: %f, Y: %f",x,y);
+    mqtt_publish(x,y);
 }
