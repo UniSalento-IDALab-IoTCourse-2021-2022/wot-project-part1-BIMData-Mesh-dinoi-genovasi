@@ -195,6 +195,6 @@ void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rss
     _ibeacon_model_state.major = major;
     _ibeacon_model_state.minor = minor;
     _ibeacon_model_state.rssi = rssi;
-    _ibeacon_model_state.distance = pow(10,((meausuredPower - rssi) / 10 * envFactor));
+    _ibeacon_model_state.distance = pow(10,((float )(meausuredPower - rssi) / 10 * envFactor));
     _ibeacon_model_state.counter++;
 }
