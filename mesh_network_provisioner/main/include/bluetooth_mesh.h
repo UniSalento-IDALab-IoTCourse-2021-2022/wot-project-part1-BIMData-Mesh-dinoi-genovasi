@@ -13,6 +13,7 @@
 #include "ibeacon_model_mesh.h"
 #include "scan.h"
 #include "esp_ibeacon_api.h"
+#include "triangulation.h"
 
 #define CID_ESP 0x02E5
 #define MSG_SEND_TTL        3

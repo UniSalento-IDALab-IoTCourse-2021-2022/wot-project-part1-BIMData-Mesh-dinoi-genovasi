@@ -4,6 +4,7 @@
 #include "wifi.h"
 #include "ota.h"
 #include "triangulation.h"
+#include "mqtt.h"
 #define MAIN_TAG "MAIN"
 
 void app_main(void)
@@ -18,7 +19,7 @@ void app_main(void)
     ESP_LOGI(MAIN_TAG,"OTA VERSION 6");
 
     wifi_init_sta();
-
+    mqtt_init();
     bluetooth_init();
     ble_mesh_get_dev_uuid(dev_uuid);
     ble_mesh_init();
