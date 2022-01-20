@@ -16,7 +16,7 @@ typedef struct __attribute__((packed)){
     uint16_t major;
     uint16_t minor;
     int rssi;
-    float distance;
+    double distance;
     int counter;
 } model_ibeacon_data_t;
 

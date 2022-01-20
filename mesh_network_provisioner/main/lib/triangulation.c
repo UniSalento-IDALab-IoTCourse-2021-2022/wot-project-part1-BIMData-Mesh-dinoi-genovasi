@@ -3,8 +3,10 @@
 
  void update_distance(uint8_t *uuid, float d){
         for(int i = 0; i<3; i++){
-            if(memcmp(uuid,fixed_nodes[i].uuid,16)) {
+            if(memcmp(uuid,fixed_nodes[i].uuid,16) == 0) {
                 fixed_nodes[i].distance = d;
+                ESP_LOG_BUFFER_HEX("TRILA",fixed_nodes[i].uuid,16);
+                ESP_LOG_BUFFER_HEX("TRILA",uuid,16);
                 ESP_LOGI("TRILA","Dispositivo: %d Distance: %f",i,d);
             }
         }
