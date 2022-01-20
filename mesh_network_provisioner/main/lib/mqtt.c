@@ -1,9 +1,12 @@
+#include <cJSON.h>
 #include "mqtt.h"
+
+esp_mqtt_client_handle_t client;
 
 void mqtt_init(){
     ESP_LOGI("MQTT","Init MQTT");
     esp_err_t err;
-    esp_mqtt_client_handle_t client = esp_mqtt_client_init(&mqtt_cfg);
+    client = esp_mqtt_client_init(&mqtt_cfg);
     esp_mqtt_client_register_event(client,ESP_EVENT_ANY_ID, mqtt_event_handler, NULL);
     err = esp_mqtt_client_start(client);
     if(err != ESP_OK){
@@ -46,4 +49,15 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
         case MQTT_EVENT_DELETED:
             break;
     }
+}
+
+void mqtt_publish(float x, float y){
+    cJSON *data_object;
+    data_object = cJSON_CreateObject();
+    cJSON_AddNumberToObject(data_object,"x",x);
+    cJSON_AddNumberToObject(data_object,"y",y);
+    char *str = cJSON_Print(data_object);
+    esp_mqtt_client_publish(client,"bimTest/0UJqou9f1FzfLKdgHitGMp",str,strlen(str),1,0);
+    cJSON_free(data_object);
+    cJSON_free(str);
 }

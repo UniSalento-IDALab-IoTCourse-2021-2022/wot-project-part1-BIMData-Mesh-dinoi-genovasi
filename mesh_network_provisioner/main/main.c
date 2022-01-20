@@ -30,7 +30,7 @@ void app_main(void)
        // ble_mesh_custom_sensor_client_model_message_get();
         ble_mesh_ibeacon_model_client_message_get();
         estimate_position();
-        vTaskDelay(pdMS_TO_TICKS(5000));
+        vTaskDelay(pdMS_TO_TICKS(30000));
     }
 }
 
