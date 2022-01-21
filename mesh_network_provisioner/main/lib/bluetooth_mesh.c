@@ -292,8 +292,8 @@ static void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, 
                     break;
                 case ESP_BLE_MESH_IBEACON_MODEL_OP_STATUS:;
                 model_ibeacon_data_t ibeacon_response = *(model_ibeacon_data_t *)param->client_recv_publish_msg.msg;
-                ESP_LOGI("STATUS IBEACON","Ricevuto da nodo: 0x%hu (address) Major: %d Minor: %d RSSI: %d Count: %d Distance: %f",param->client_recv_publish_msg.ctx->addr,ibeacon_response.major,ibeacon_response.minor,ibeacon_response.rssi, ibeacon_response.counter,ibeacon_response.distance);
-                ESP_LOG_BUFFER_HEX("STATUS IBEACON",ibeacon_response.uuid,16);
+                //ESP_LOGI("STATUS IBEACON","Ricevuto da nodo: 0x%hu (address) Major: %d Minor: %d RSSI: %d Count: %d Distance: %f",param->client_recv_publish_msg.ctx->addr,ibeacon_response.major,ibeacon_response.minor,ibeacon_response.rssi, ibeacon_response.counter,ibeacon_response.distance);
+                //ESP_LOG_BUFFER_HEX("STATUS IBEACON",ibeacon_response.uuid,16);
                 uint8_t *uuid = get_uuid_from_addr(param->client_recv_publish_msg.ctx->addr);
                 update_distance(uuid,ibeacon_response.distance);
                 break;
