@@ -54,11 +54,6 @@ esp_err_t ble_mesh_init(){
         return ret;
     }
 
-    /*esp_ble_mesh_register_ble_callback(ble_mesh_scan_cb);
-    struct bt_mesh_ble_scan_param sparam;
-    sparam.duration = 5; //this has no effect.. not implemented in scan.h..
-    bt_mesh_start_ble_scan(&sparam);
-    */
     ESP_LOGI("MESH_INIT","Mesh Init Complete");
 
     return ret;
@@ -80,7 +75,6 @@ static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_me
             break;
         case ESP_BLE_MESH_PROVISIONER_ADD_LOCAL_APP_KEY_COMP_EVT:
             prov_key.app_idx = param->provisioner_add_app_key_comp.app_idx;
-            //esp_ble_mesh_provisioner_bind_app_key_to_local_model(PROV_OWN_ADDR,prov_key.app_idx,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_CLIENT,CID_ESP);
             esp_ble_mesh_provisioner_bind_app_key_to_local_model(PROV_OWN_ADDR,prov_key.app_idx,ESP_BLE_MESH_IBEACON_MODEL_ID_CLIENT,CID_ESP);
             break;
         default:
@@ -282,18 +276,11 @@ void ble_mesh_get_dev_uuid(uint8_t *dev_uuid){
 }
 
 static void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param){
-
     switch (event) {
         case ESP_BLE_MESH_MODEL_OPERATION_EVT:
             switch(param->model_operation.opcode){
-                case ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS:;
-                    model_sensors_data_t response = *(model_sensors_data_t *)param->client_recv_publish_msg.msg;
-                    ESP_LOGI("STATUS SENSOR","Ricevuto da nodo: 0x%hu (address) temp: %d hum: %d lux %f",param->client_recv_publish_msg.ctx->addr,response.temperature,response.humidity,response.lux);
-                    break;
                 case ESP_BLE_MESH_IBEACON_MODEL_OP_STATUS:;
                 model_ibeacon_data_t ibeacon_response = *(model_ibeacon_data_t *)param->client_recv_publish_msg.msg;
-                //ESP_LOGI("STATUS IBEACON","Ricevuto da nodo: 0x%hu (address) Major: %d Minor: %d RSSI: %d Count: %d Distance: %f",param->client_recv_publish_msg.ctx->addr,ibeacon_response.major,ibeacon_response.minor,ibeacon_response.rssi, ibeacon_response.counter,ibeacon_response.distance);
-                //ESP_LOG_BUFFER_HEX("STATUS IBEACON",ibeacon_response.uuid,16);
                 uint8_t *uuid = get_uuid_from_addr(param->client_recv_publish_msg.ctx->addr);
                 update_distance(uuid,ibeacon_response.distance);
                 break;
@@ -312,27 +299,6 @@ uint8_t * get_uuid_from_addr(uint16_t addr){
     return NULL;
 }
 
-esp_err_t ble_mesh_custom_sensor_client_model_message_get(){
-    esp_ble_mesh_msg_ctx_t ctx = {0};
-    uint32_t opcode;
-    esp_err_t err = ESP_OK;
-    opcode = ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_GET;
-    for (int i = 0; i < ARRAY_SIZE(nodes); i++) {
-        if (nodes[i].unicast == ESP_BLE_MESH_ADDR_UNASSIGNED)
-            return ESP_OK;
-        ctx.net_idx = prov_key.net_idx;
-        ctx.app_idx = prov_key.app_idx;
-        ctx.addr = nodes[i].unicast;
-        ctx.send_ttl = 7;
-        ctx.send_rel = false;
-        //ESP_LOGI("GETOP", "address 0x%x", ctx.addr);
-        err = esp_ble_mesh_client_model_send_msg(custom_sensor_client.model, &ctx, opcode, 0, NULL, 0, true, ROLE_PROVISIONER);
-        if (err != ESP_OK)
-            ESP_LOGE("SEND_GET", "Sending error\n");
-    }
-    return err;
-}
-
 esp_err_t ble_mesh_ibeacon_model_client_message_get(){
     esp_ble_mesh_msg_ctx_t ctx = {0};
     uint32_t opcode;
@@ -346,26 +312,9 @@ esp_err_t ble_mesh_ibeacon_model_client_message_get(){
         ctx.addr = nodes[i].unicast;
         ctx.send_ttl = 7;
         ctx.send_rel = false;
-        //ESP_LOGI("GETOP", "address 0x%x", ctx.addr);
         err = esp_ble_mesh_client_model_send_msg(ibeacon_model_client.model, &ctx, opcode, 0, NULL, 0, true, ROLE_PROVISIONER);
         if (err != ESP_OK)
             ESP_LOGE("SEND_GET", "Sending error\n");
     }
     return err;
-}
-
-static void ble_mesh_scan_cb(esp_ble_mesh_ble_cb_event_t event, esp_ble_mesh_ble_cb_param_t *param){
-    if(esp_ble_is_ibeacon_packet(param->scan_ble_adv_pkt.data,param->scan_ble_adv_pkt.length)){
-        esp_ble_ibeacon_t *beacon_data= (esp_ble_ibeacon_t *) param->scan_ble_adv_pkt.data;
-        ESP_LOGI("MESH SCAN","----- TROVATO IL BEACON ----");
-                esp_log_buffer_hex("UUID: ",beacon_data->ibeacon_vendor.proximity_uuid,ESP_UUID_LEN_128);
-        ESP_LOGI("MESH SCAN","Measured Power: %d",beacon_data->ibeacon_vendor.measured_power);
-
-        uint16_t major = ENDIAN_CHANGE_U16(beacon_data->ibeacon_vendor.major);
-        uint16_t minor = ENDIAN_CHANGE_U16(beacon_data->ibeacon_vendor.minor);
-
-        ESP_LOGI("MESH SCAN","Major: %d Minor: %d",major,minor);
-        ESP_LOGI("MESH SCAN","RSSI: %d",param->scan_ble_adv_pkt.rssi);
-        ESP_LOGI("MESH SCAN","\n");
-    }
 }
