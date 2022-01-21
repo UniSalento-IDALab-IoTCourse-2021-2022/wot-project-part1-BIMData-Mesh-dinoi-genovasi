@@ -58,7 +58,7 @@ static esp_ble_mesh_model_op_t ibeacon_op[] = {
 
 static model_sensors_data_t _server_model_state = {.device_name = DEVICE_ID,.temperature=0,.humidity=0, .lux = 0.0};
 
-static model_ibeacon_data_t _ibeacon_model_state = {.uuid ={}, .major =0, .minor=0, .rssi=0};
+static model_ibeacon_data_t _ibeacon_model_state = {.uuid ={}, .major =0, .minor=0, .rssi=0, .counter=0};
 
 
 static esp_ble_mesh_model_t custom_models[]={

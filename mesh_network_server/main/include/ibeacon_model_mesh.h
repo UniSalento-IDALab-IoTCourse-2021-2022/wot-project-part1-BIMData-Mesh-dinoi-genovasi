@@ -24,6 +24,8 @@ typedef struct __attribute__((packed)) {
     uint16_t major;
     uint16_t minor;
     int rssi;
+    double distance; // d = 10^( (A - RSSI) / (10*N) )
+    int counter;   // Ibeacon reading counter
 } model_ibeacon_data_t;
 
 #endif //MESH_NETWORK_SERVER_IBEACON_MODEL_MESH_H

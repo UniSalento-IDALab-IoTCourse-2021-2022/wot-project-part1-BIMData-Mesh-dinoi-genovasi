@@ -2,6 +2,7 @@
 #include <scan.h>
 #include "bluetooth_mesh.h"
 #include "esp_ibeacon_api.h"
+#include <math.h>
 
 #define BLUETOOTH_MESH_TAG "BLE_MESH"
 
@@ -131,8 +132,8 @@ void custom_sensors_server_callback(esp_ble_mesh_model_cb_event_t event, esp_ble
                     model_ibeacon_data_t ibeacon_resp = *(model_ibeacon_data_t *) param->model_operation.model->user_data;
                     esp_log_buffer_hex("UUID: ", ibeacon_resp.uuid, ESP_UUID_LEN_128);
 
-                    ESP_LOGI(BLUETOOTH_MESH_TAG, "MESH MESSAGE SENT - MAJOR: %hu, MINOR: %d, RSSI: %d\n",
-                             ibeacon_resp.major, ibeacon_resp.minor, ibeacon_resp.rssi);
+                    ESP_LOGI(BLUETOOTH_MESH_TAG, "MESH MESSAGE SENT - MAJOR: %hu, MINOR: %d, RSSI: %d distance: %f - Counter #%d - \n",
+                             ibeacon_resp.major, ibeacon_resp.minor, ibeacon_resp.rssi, ibeacon_resp.distance, ibeacon_resp.counter);
                     esp_err_t ib_err = esp_ble_mesh_server_model_send_msg(param->model_operation.model,
                                                                        param->model_operation.ctx,
                                                                        ESP_BLE_MESH_IBEACON_MODEL_OP_STATUS,
@@ -181,8 +182,19 @@ void update_state(float lux, int hum, int temp) {
 }
 
 void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rssi) {
+    // d = 10^(((P)-(S))/(10*N))
+    // Where:
+    //    d - estimated distance in meters
+    //    P - beacon broadcast power in dBm at 1 m (Tx Power)
+    //    S - measured signal value (RSSI) in dBm
+    //    N - environmental factor (usually value between 2 and 4)
+    int meausuredPower = -74;
+    double envFactor = 5.3;
+
     memcpy(_ibeacon_model_state.uuid, uuid, 16);
     _ibeacon_model_state.major = major;
     _ibeacon_model_state.minor = minor;
     _ibeacon_model_state.rssi = rssi;
+    _ibeacon_model_state.distance = pow(10,((double )(meausuredPower - rssi) / (10 * envFactor)));
+    _ibeacon_model_state.counter++;
 }
