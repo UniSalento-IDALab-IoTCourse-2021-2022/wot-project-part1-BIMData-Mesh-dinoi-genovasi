@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "mqtt.h"
+#include <esp_log.h>
 
 typedef struct {
     float x;

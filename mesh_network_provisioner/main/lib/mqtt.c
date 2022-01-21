@@ -1,4 +1,4 @@
-#include <cJSON.h>
+
 #include "mqtt.h"
 
 esp_mqtt_client_handle_t client;
@@ -34,19 +34,12 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             esp_mqtt_client_publish(client,"/topic/esp32/prova","Ciao",4,1,0);
             break;
         case MQTT_EVENT_DISCONNECTED:
-            break;
-        case MQTT_EVENT_SUBSCRIBED:
-            break;
-        case MQTT_EVENT_UNSUBSCRIBED:
+            esp_mqtt_client_reconnect(client);
             break;
         case MQTT_EVENT_PUBLISHED:
             ESP_LOGI("MQTT", "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
             break;
-        case MQTT_EVENT_DATA:
-            break;
-        case MQTT_EVENT_BEFORE_CONNECT:
-            break;
-        case MQTT_EVENT_DELETED:
+        default:
             break;
     }
 }

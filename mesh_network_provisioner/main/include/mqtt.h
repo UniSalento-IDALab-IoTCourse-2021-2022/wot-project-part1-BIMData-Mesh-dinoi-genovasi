@@ -3,6 +3,7 @@
 
 #include <mqtt_client.h>
 #include "esp_log.h"
+#include <cJSON.h>
 
 #define MQTT_BROKER_URI "ws://fridaycloud.ddns.net:8001/mqtt"
 

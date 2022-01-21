@@ -1,4 +1,3 @@
-#include <esp_log.h>
 #include "triangulation.h"
 
  void update_distance(uint8_t *uuid, float d){
