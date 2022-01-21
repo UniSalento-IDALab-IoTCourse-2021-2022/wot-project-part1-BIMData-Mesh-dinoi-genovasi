@@ -8,7 +8,6 @@
 #include <esp_ble_mesh_common_api.h>
 #include <string.h>
 #include <esp_bt_device.h>
-#include "custom_sensor_model_mesh.h"
 #include <esp_ble_mesh_networking_api.h>
 #include "ibeacon_model_mesh.h"
 #include "scan.h"
