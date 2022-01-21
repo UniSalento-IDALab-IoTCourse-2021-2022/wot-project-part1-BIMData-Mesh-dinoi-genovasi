@@ -20,6 +20,6 @@
 #define OTA_UPDATE_URL "http://fridaycloud.ddns.net:8000/mesh_network_provisioner.bin"
 #define OTA_TIMEOUT_MS 300
 
-void ota_task(void *pvParameter);
+void ota_task();
 
 #endif //MESH_NETWORK_PROVISIONER_OTA_H

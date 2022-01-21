@@ -8,11 +8,11 @@
 #include <esp_ble_mesh_common_api.h>
 #include <string.h>
 #include <esp_bt_device.h>
-#include "custom_sensor_model_mesh.h"
 #include <esp_ble_mesh_networking_api.h>
 #include "ibeacon_model_mesh.h"
 #include "scan.h"
 #include "esp_ibeacon_api.h"
+#include "triangulation.h"
 
 #define CID_ESP 0x02E5
 #define MSG_SEND_TTL        3
@@ -71,16 +71,11 @@ static esp_ble_mesh_node_info_t nodes[CONFIG_BLE_MESH_MAX_PROV_NODES] = {
         }
 };
 
-static const esp_ble_mesh_client_op_pair_t custom_model_op_pair[] = {{ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_GET,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS}};
-static esp_ble_mesh_model_op_t custom_sensors_op[]={ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS,2),ESP_BLE_MESH_MODEL_OP_END};
-static esp_ble_mesh_client_t  custom_sensor_client = {.op_pair=custom_model_op_pair,.op_pair_size=ARRAY_SIZE(custom_model_op_pair),};
-
 static esp_ble_mesh_client_op_pair_t  ibeacon_model_op_pair[] = {{ESP_BLE_MESH_IBEACON_MODEL_OP_GET,ESP_BLE_MESH_IBEACON_MODEL_OP_STATUS}};
 static esp_ble_mesh_model_op_t ibeacon_model_op[] = {ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_IBEACON_MODEL_OP_STATUS,2),ESP_BLE_MESH_MODEL_OP_END};
 static esp_ble_mesh_client_t ibeacon_model_client = {.op_pair=ibeacon_model_op_pair,.op_pair_size=ARRAY_SIZE(ibeacon_model_op_pair)};
 
 static esp_ble_mesh_model_t custom_models[] = {
-        //ESP_BLE_MESH_VENDOR_MODEL(CID_ESP,ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_CLIENT,custom_sensors_op,NULL,&custom_sensor_client),
         ESP_BLE_MESH_VENDOR_MODEL(CID_ESP,ESP_BLE_MESH_IBEACON_MODEL_ID_CLIENT,ibeacon_model_op,NULL,&ibeacon_model_client)
 };
 static esp_ble_mesh_elem_t elements[] = {
@@ -93,11 +88,10 @@ static esp_err_t prov_complete(int node_idx, const esp_ble_mesh_octet16_t uuid, 
 static void config_client_callback(esp_ble_mesh_cfg_client_cb_event_t event, esp_ble_mesh_cfg_client_cb_param_t *param);
 static void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param);
 static void recv_unprov_adv_pkt(uint8_t dev_uuid[16], uint8_t addr[BD_ADDR_LEN], esp_ble_mesh_addr_type_t addrType, uint16_t oob_info, uint8_t adv_type, esp_ble_mesh_prov_bearer_t bearer);
-esp_err_t ble_mesh_custom_sensor_client_model_message_get(void);
 esp_err_t ble_mesh_ibeacon_model_client_message_get(void);
 static esp_ble_mesh_node_info_t *ble_mesh_get_node_info(uint16_t unicast_addr);
 static esp_err_t ble_mesh_set_msg_common(esp_ble_mesh_client_common_param_t *common, esp_ble_mesh_node_info_t *node, esp_ble_mesh_model_t *model, uint32_t opcode);
-static void ble_mesh_scan_cb(esp_ble_mesh_ble_cb_event_t event, esp_ble_mesh_ble_cb_param_t *param);
+uint8_t * get_uuid_from_addr(uint16_t addr);
 
 static esp_ble_mesh_prov_t provision = {
         .prov_uuid = dev_uuid,
