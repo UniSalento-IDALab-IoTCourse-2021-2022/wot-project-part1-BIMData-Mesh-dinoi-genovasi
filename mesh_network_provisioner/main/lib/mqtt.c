@@ -44,13 +44,16 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
     }
 }
 
-void mqtt_publish(float x, float y){
+void mqtt_publish(float x, float y, float d0, float d1, float d2){
     cJSON *data_object;
     data_object = cJSON_CreateObject();
     cJSON_AddNumberToObject(data_object,"x",x);
     cJSON_AddNumberToObject(data_object,"y",y);
+    cJSON_AddNumberToObject(data_object, "r0", d0);
+    cJSON_AddNumberToObject(data_object, "r1", d1);
+    cJSON_AddNumberToObject(data_object, "r2", d2);
     char *str = cJSON_Print(data_object);
-    esp_mqtt_client_publish(client,"bimTest/0UJqou9f1FzfLKdgHitGMp",str,strlen(str),1,0);
+    esp_mqtt_client_publish(client,"bimTest/0j9EEDh8jEev_8A15__li$",str,strlen(str),1,0);
     cJSON_free(data_object);
     cJSON_free(str);
 }

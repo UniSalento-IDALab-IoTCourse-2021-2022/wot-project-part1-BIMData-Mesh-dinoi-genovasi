@@ -11,7 +11,7 @@ static const esp_mqtt_client_config_t mqtt_cfg = {.uri = MQTT_BROKER_URI};
 
 void mqtt_init();
 static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data);
-void mqtt_publish(float x, float y);
+void mqtt_publish(float x, float y, float d0, float d1, float d2);
 
 
 static void log_error_if_nonzero(const char *message, int error_code)
