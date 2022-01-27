@@ -1,12 +1,12 @@
 var applet;
 var subscription = "test";
 
-var n2x = 2
-var n2y = 2
-var n1x = 16
-var n1y = 2
-var n0x = 14
-var n0y = 14
+var n2x = 0.2
+var n2y = 0.2
+var n1x = 1.6
+var n1y = 0.2
+var n0x = 1.4
+var n0y = 1.4
 
 var hostname = "fridaycloud.ddns.net";
 var port = 8001;
@@ -77,16 +77,16 @@ async function drawPoints(applet){
   applet.evalCommand("SetPerspective(\"G\")")
     applet.setMode(40)
 
-applet.evalCommand("ZoomIn(0.3,(0,-8))")
+applet.evalCommand("ZoomIn(0.4,(0,-8))")
 //applet.evalCommand("ZoomIn(-10,-10,20,20)")
 
-applet.evalCommand("X = (37.5,36.8)")
+applet.evalCommand("X = (3.75,3.68)")
 applet.evalCommand("SetVisibleInView(X,1,false)")
-applet.evalCommand("Y = (-33,36.8)")
+applet.evalCommand("Y = (-3.3,3.68)")
 applet.evalCommand("SetVisibleInView(Y,1,false)")
-applet.evalCommand("W = (-33,-32.5)")
+applet.evalCommand("W = (-3.3,-3.25)")
 applet.evalCommand("SetVisibleInView(W,1,false)")
-applet.evalCommand("Z = (37.5,-32.5)")
+applet.evalCommand("Z = (3.75,-3.25)")
 applet.evalCommand("SetVisibleInView(Z,1,false)")
 applet.evalCommand("room = Polygon(X,Y,W,Z)")
 applet.evalCommand("SetColor(room,\"cyan\")")
@@ -101,11 +101,11 @@ applet.evalCommand("SetColor(NODO0,0,0,255)")
 
 applet.evalCommand("R = (0,0)")
 applet.evalCommand("SetVisibleInView(R,1,false)")
-applet.evalCommand("S = (18,0)")
+applet.evalCommand("S = (1.8,0)")
 applet.evalCommand("SetVisibleInView(S,1,false)")
-applet.evalCommand("T = (18,16)")
+applet.evalCommand("T = (1.8,1.6)")
 applet.evalCommand("SetVisibleInView(T,1,false)")
-applet.evalCommand("U = (0,16)")
+applet.evalCommand("U = (0,1.6)")
 applet.evalCommand("SetVisibleInView(U,1,false)")
 applet.evalCommand("table = Polygon(R,S,T,U)")
 applet.evalCommand("SetColor(table,\"brown\")")
