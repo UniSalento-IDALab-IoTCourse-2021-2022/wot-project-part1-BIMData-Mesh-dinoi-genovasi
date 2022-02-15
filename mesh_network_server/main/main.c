@@ -5,16 +5,12 @@
 #define MAIN_TAG "MAIN"
 
 
-#include "board.h"
 #include "wifi.h"
 #include "ota.h"
 
 
 void app_main(void)
 {
-    float lux;
-    int hum;
-    int temp;
     esp_err_t err;
 
     ESP_LOGI(MAIN_TAG, "Initializing...");
@@ -26,8 +22,6 @@ void app_main(void)
     }
 
     ESP_ERROR_CHECK(err);
-
-    board_init();
 
     wifi_init_sta();
 
@@ -46,14 +40,6 @@ void app_main(void)
     }
 
     xTaskCreate(&ota_task, "ota_update_task", 8192, NULL, 5, NULL);
-
-//    while (1) {
-//        lux = read_lux();
-//        readDHT(&temp, &hum);
-//        ESP_LOGI(MAIN_TAG,"ACQUIRED SENSOR VALUES - DEVICE: %s, LUX: %f, TEMP: %d, HUM: %d\n", DEVICE_ID, lux, temp, hum);
-//        update_state(lux, hum, temp);
-//        vTaskDelay(pdMS_TO_TICKS(5000));
-//    }
 
 }
 

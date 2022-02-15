@@ -1,7 +1,3 @@
-//
-// Created by Riccardo Taurino on 22/12/2021.
-//
-
 #ifndef MESH_NETWORK_SERVER_IBEACON_MODEL_MESH_H
 #define MESH_NETWORK_SERVER_IBEACON_MODEL_MESH_H
 
