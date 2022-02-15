@@ -115,19 +115,6 @@ void custom_sensors_server_callback(esp_ble_mesh_model_cb_event_t event, esp_ble
     switch (event) {
         case ESP_BLE_MESH_MODEL_OPERATION_EVT:
             switch (param->model_operation.opcode) {
-                case ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_GET:;
-                    model_sensors_data_t response = *(model_sensors_data_t *) param->model_operation.model->user_data;
-                    ESP_LOGI(BLUETOOTH_MESH_TAG, "MESH MESSAGE SENT - DEVICE: %s, LUX: %f, TEMP: %d, HUM: %d\n",
-                             response.device_name, response.lux, response.temperature, response.humidity);
-                    esp_err_t err = esp_ble_mesh_server_model_send_msg(param->model_operation.model,
-                                                                       param->model_operation.ctx,
-                                                                       ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS,
-                                                                       sizeof(response), (uint8_t *) &response);
-                    if (err) {
-                        ESP_LOGE(BLUETOOTH_MESH_TAG, "Failed to send message 0x%06x",
-                                 ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_OP_STATUS);
-                    }
-                    break;
                 case ESP_BLE_MESH_IBEACON_MODEL_OP_GET:;
                     model_ibeacon_data_t ibeacon_resp = *(model_ibeacon_data_t *) param->model_operation.model->user_data;
                     esp_log_buffer_hex("UUID: ", ibeacon_resp.uuid, ESP_UUID_LEN_128);
@@ -171,13 +158,6 @@ static void ble_mesh_scan_cb(esp_ble_mesh_ble_cb_event_t event, esp_ble_mesh_ble
 
         update_ibeacon_state(beacon_data->ibeacon_vendor.proximity_uuid, major, minor, param->scan_ble_adv_pkt.rssi);
     }
-
-}
-
-void update_state(float lux, int hum, int temp) {
-    _server_model_state.humidity = hum;
-    _server_model_state.lux = lux;
-    _server_model_state.temperature = temp;
 
 }
 
