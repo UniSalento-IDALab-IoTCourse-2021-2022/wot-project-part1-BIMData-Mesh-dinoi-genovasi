@@ -86,7 +86,7 @@ int ble_mesh_init();
 static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_mesh_prov_cb_param_t *param);
 static esp_err_t prov_complete(int node_idx, const esp_ble_mesh_octet16_t uuid, uint16_t unicast, uint8_t elem_num, uint16_t net_idx);
 static void config_client_callback(esp_ble_mesh_cfg_client_cb_event_t event, esp_ble_mesh_cfg_client_cb_param_t *param);
-static void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param);
+static void custom_ibeacon_client_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param);
 static void recv_unprov_adv_pkt(uint8_t dev_uuid[16], uint8_t addr[BD_ADDR_LEN], esp_ble_mesh_addr_type_t addrType, uint16_t oob_info, uint8_t adv_type, esp_ble_mesh_prov_bearer_t bearer);
 esp_err_t ble_mesh_ibeacon_model_client_message_get(void);
 static esp_ble_mesh_node_info_t *ble_mesh_get_node_info(uint16_t unicast_addr);

@@ -11,7 +11,7 @@ esp_err_t ble_mesh_init(){
         ESP_LOGE("MESH_INIT","Error registering provisioning callback");
         return ret;
     }
-    ret = esp_ble_mesh_register_custom_model_callback(custom_sensors_client_callback);
+    ret = esp_ble_mesh_register_custom_model_callback(custom_ibeacon_client_callback);
     if(ret != ESP_OK) {
         ESP_LOGE("MESH_INIT", "Error registering custom model callback");
         return ret;
@@ -275,7 +275,7 @@ void ble_mesh_get_dev_uuid(uint8_t *dev_uuid){
     ESP_LOG_BUFFER_HEX("DEVUUID",dev_uuid,16);
 }
 
-static void custom_sensors_client_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param){
+static void custom_ibeacon_client_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param){
     switch (event) {
         case ESP_BLE_MESH_MODEL_OPERATION_EVT:
             switch(param->model_operation.opcode){
