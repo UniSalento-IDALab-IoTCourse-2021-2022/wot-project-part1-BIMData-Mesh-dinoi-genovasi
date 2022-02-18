@@ -14,7 +14,7 @@ esp_err_t ble_mesh_init() {
 
     esp_ble_mesh_register_prov_callback(provisioning_callback);
     esp_ble_mesh_register_config_server_callback(config_server_callback);
-    esp_ble_mesh_register_custom_model_callback(custom_sensors_server_callback);
+    esp_ble_mesh_register_custom_model_callback(custom_ibeacon_server_callback);
 
     esp_ble_mesh_register_ble_callback(ble_mesh_scan_cb);
 
@@ -111,7 +111,7 @@ void ble_mesh_get_dev_uuid() {
     ESP_LOG_BUFFER_HEX("dev_uuid", dev_uuid, 16);
 }
 
-void custom_sensors_server_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param) {
+void custom_ibeacon_server_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param) {
     switch (event) {
         case ESP_BLE_MESH_MODEL_OPERATION_EVT:
             switch (param->model_operation.opcode) {
