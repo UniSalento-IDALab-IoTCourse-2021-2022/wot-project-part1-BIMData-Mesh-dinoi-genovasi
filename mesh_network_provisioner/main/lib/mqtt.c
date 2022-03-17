@@ -31,7 +31,6 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             break;
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI("MQTT","Connected to broker via WS");
-            esp_mqtt_client_publish(client,"/topic/esp32/prova","Ciao",4,1,0);
             break;
         case MQTT_EVENT_DISCONNECTED:
             esp_mqtt_client_reconnect(client);
@@ -53,7 +52,7 @@ void mqtt_publish(float x, float y, float d0, float d1, float d2){
     cJSON_AddNumberToObject(data_object, "r1", d1);
     cJSON_AddNumberToObject(data_object, "r2", d2);
     char *str = cJSON_Print(data_object);
-    esp_mqtt_client_publish(client,"bimTest/0j9EEDh8jEev_8A15__li$",str,strlen(str),1,0);
+    esp_mqtt_client_publish(client,"BIMData_Architecture/Computer_Engineering_Cloud/IOT_Project/RTLS_MESH_NETWORK_IFC/Ecotekne/LaStecca/PrimoPiano/Idalab-002/Desk/uuid/0j9EEDh8jEev_8A15__li$",str,strlen(str),1,0);
     cJSON_free(data_object);
     cJSON_free(str);
 }
