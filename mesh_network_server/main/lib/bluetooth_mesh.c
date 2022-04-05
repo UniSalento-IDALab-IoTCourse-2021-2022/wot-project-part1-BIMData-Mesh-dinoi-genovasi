@@ -168,8 +168,8 @@ void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rss
     //    P - beacon broadcast power in dBm at 1 m (Tx Power)
     //    S - measured signal value (RSSI) in dBm
     //    N - environmental factor (usually value between 2 and 4)
-    int meausuredPower = -74;
-    double envFactor = 5.3;
+    int meausuredPower = -65;
+    double envFactor = 6.9;
 
     memcpy(_ibeacon_model_state.uuid, uuid, 16);
     _ibeacon_model_state.major = major;
