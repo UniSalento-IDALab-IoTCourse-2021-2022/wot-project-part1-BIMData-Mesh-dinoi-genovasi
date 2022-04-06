@@ -68,7 +68,6 @@ static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_me
 static void prov_complete(uint16_t net_idx, uint16_t addr, uint8_t flags, uint32_t iv_index);
 void config_server_callback(esp_ble_mesh_cfg_server_cb_event_t event, esp_ble_mesh_cfg_server_cb_param_t *param);
 void custom_ibeacon_server_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param);
-static void ble_mesh_scan_cb(esp_ble_mesh_ble_cb_event_t event, esp_ble_mesh_ble_cb_param_t *param);
 
 static esp_ble_mesh_prov_t provision = {
         .uuid = dev_uuid,
