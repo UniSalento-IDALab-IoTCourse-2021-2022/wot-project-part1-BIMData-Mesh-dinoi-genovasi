@@ -93,6 +93,7 @@ static esp_ble_mesh_comp_t composition = {
 
 void ble_mesh_get_dev_uuid();
 
+static bool provisioned = false;
 //  Da eliminire perchè relativa all'aggiornamento di stato del server node
 //  void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rssi);
 
