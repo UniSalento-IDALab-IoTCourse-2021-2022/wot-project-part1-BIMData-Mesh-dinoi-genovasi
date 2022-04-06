@@ -304,13 +304,17 @@ esp_err_t ble_mesh_ibeacon_model_client_message_get(){
     uint32_t opcode;
     esp_err_t err = ESP_OK;
     opcode = ESP_BLE_MESH_IBEACON_MODEL_OP_GET;
+    for (int i = 0; i < ARRAY_SIZE(nodes); i++) {
+        if (nodes[i].unicast == ESP_BLE_MESH_ADDR_UNASSIGNED)
+            return ESP_OK;
         ctx.net_idx = prov_key.net_idx;
         ctx.app_idx = prov_key.app_idx;
-        ctx.addr = ESP_BLE_MESH_GROUP_PUB_ADDR;
+        ctx.addr = nodes[i].unicast;
         ctx.send_ttl = 7;
         ctx.send_rel = false;
         err = esp_ble_mesh_client_model_send_msg(ibeacon_model_client.model, &ctx, opcode, 0, NULL, 0, true, ROLE_PROVISIONER);
         if (err != ESP_OK)
             ESP_LOGE("SEND_GET", "Sending error\n");
+    }
     return err;
 }
