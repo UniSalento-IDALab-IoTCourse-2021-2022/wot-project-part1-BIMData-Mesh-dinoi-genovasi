@@ -121,7 +121,7 @@ void custom_ibeacon_server_callback(esp_ble_mesh_model_cb_event_t event, esp_ble
                                  ESP_BLE_MESH_IBEACON_MODEL_OP_STATUS);
                     }
                     break;
-                case ESP_BLE_MESH_IBEACON_MODEL_OP_SET:;
+                case ESP_BLE_MESH_IBEACON_MODEL_OP_BEACON:;
                     int rssi = param->model_operation.ctx->recv_rssi;
                     model_ibeacon_data_t ibeaconData = *(model_ibeacon_data_t *) param->model_operation.model->user_data;
                     update_ibeacon_state(ibeaconData.uuid, ibeaconData.major, ibeaconData.minor,rssi);
