@@ -17,7 +17,7 @@
 #include "errno.h"
 #include "esp_wifi.h"
 
-#define OTA_UPDATE_URL "http://fridaycloud.ddns.net:8000/mesh_network_server.bin"
+#define OTA_UPDATE_URL "http://fridaycloud.ddns.net:8000/mesh_network_beacon.bin"
 #define OTA_TIMEOUT_MS 300
 
 void ota_task(void *pvParameter);

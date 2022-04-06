@@ -21,4 +21,4 @@ if (DEV_NAME MATCHES basta)
 endif()
 
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
-project(mesh_network_server)
+project(mesh_network_beacon)
