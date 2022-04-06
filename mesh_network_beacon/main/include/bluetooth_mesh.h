@@ -70,6 +70,7 @@ void config_server_callback(esp_ble_mesh_cfg_server_cb_event_t event, esp_ble_me
 //  Da eliminire perchè relativa alle scansioni BLE ibeacon
 //void custom_ibeacon_server_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param);
 esp_err_t ble_beacon_mesh_send(void);
+void beaconing_task(void *pvParameter);
 
 static esp_ble_mesh_prov_t provision = {
         .uuid = dev_uuid,

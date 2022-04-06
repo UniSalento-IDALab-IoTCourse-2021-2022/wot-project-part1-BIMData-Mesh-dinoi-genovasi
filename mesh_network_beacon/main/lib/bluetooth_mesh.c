@@ -48,6 +48,7 @@ static void prov_complete(uint16_t net_idx, uint16_t addr, uint8_t flags, uint32
     ESP_LOGI(BLUETOOTH_MESH_TAG, "flags 0x%02x, iv_index 0x%08x", flags, iv_index);
     prov_key.net_idx = net_idx;
     //esp_ble_mesh_model_subscribe_group_addr(esp_ble_mesh_get_primary_element_address(), CID_ESP, ESP_BLE_MESH_IBEACON_MODEL_ID_CLIENT, ESP_BLE_MESH_GROUP_PUB_ADDR);
+    xTaskCreate(&beaconing_task, "beaconing task", 8192, NULL, 5, NULL);
 }
 
 static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_mesh_prov_cb_param_t *param) {
@@ -118,6 +119,12 @@ void ble_mesh_get_dev_uuid() {
     ESP_LOG_BUFFER_HEX("dev_uuid", dev_uuid, 16);
 }
 
+void beaconing_task(void *pvParameter){
+    while(1){
+        ble_beacon_mesh_send();
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
+}
 
 // da eliminare perchè relativa all'invio del server node inseguito alla richiesta GET del provisioner
 /*
