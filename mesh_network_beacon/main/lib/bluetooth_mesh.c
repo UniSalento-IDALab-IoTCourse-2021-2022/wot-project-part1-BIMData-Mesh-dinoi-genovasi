@@ -37,10 +37,6 @@ esp_err_t ble_mesh_init() {
         return err;
     }
 
-    struct bt_mesh_ble_scan_param sparam;
-    sparam.duration = 5;
-    bt_mesh_start_ble_scan(&sparam);
-
     ESP_LOGI(BLUETOOTH_MESH_TAG, "BLE Mesh Node initialization complete");
     return ESP_OK;
 }
