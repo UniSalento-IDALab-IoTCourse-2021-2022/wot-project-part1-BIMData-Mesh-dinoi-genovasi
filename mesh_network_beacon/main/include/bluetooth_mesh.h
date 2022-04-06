@@ -13,8 +13,6 @@
 
 
 #define CID_ESP 0x02E5
-//   DEVICE_ID defined in CMakeLists.txt macros and CMake options (usb-1 ... usb-4)
-#define DEVICE_ID "server"
 
 static uint8_t dev_uuid[16] = {0xdd, 0xdd};
 
@@ -42,22 +40,24 @@ static esp_ble_mesh_model_t root_models[] = {
 };
 
 
-// Defining iBeacon Model operations
-static esp_ble_mesh_model_op_t ibeacon_op[] = {
-        ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_IBEACON_MODEL_OP_GET, 0),  // OP_GET no minimo 0 bytes
-        ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_IBEACON_MODEL_OP_SET, 4),  // OP_SET no minimo 4 bytes
-        ESP_BLE_MESH_MODEL_OP_END,
+// Aggiunte per stabilire la comunicazione sicura tra beacon-mesh e server-node
+static struct esp_ble_mesh_key {
+    uint16_t net_idx;
+    uint16_t app_idx;
+    uint8_t app_key[16];
+}prov_key;
+
+
+// Beacon-mesh model
+
+static esp_ble_mesh_client_op_pair_t  ibeacon_model_op_pair[] = {{ESP_BLE_MESH_IBEACON_MODEL_OP_BEACON,ESP_BLE_MESH_IBEACON_MODEL_OP_STATUS}};
+
+static esp_ble_mesh_model_op_t ibeacon_model_op[] = {ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_IBEACON_MODEL_OP_STATUS,2),ESP_BLE_MESH_MODEL_OP_END};
+static esp_ble_mesh_client_t ibeacon_model_client = {.op_pair=ibeacon_model_op_pair,.op_pair_size=ARRAY_SIZE(ibeacon_model_op_pair)};
+
+static esp_ble_mesh_model_t custom_models[] = {
+        ESP_BLE_MESH_VENDOR_MODEL(CID_ESP,ESP_BLE_MESH_IBEACON_MODEL_ID_CLIENT,ibeacon_model_op,NULL,&ibeacon_model_client)
 };
-
-static model_ibeacon_data_t _ibeacon_model_state = {.uuid ={}, .major =0, .minor=0, .rssi=0, .counter=0};
-
-
-static esp_ble_mesh_model_t custom_models[]={
-//        ESP_BLE_MESH_VENDOR_MODEL(CID_ESP, ESP_BLE_MESH_CUSTOM_SENSOR_MODEL_ID_SERVER,custom_sensor_op, NULL,&_server_model_state),
-        ESP_BLE_MESH_VENDOR_MODEL(CID_ESP, ESP_BLE_MESH_IBEACON_MODEL_ID_SERVER,ibeacon_op, NULL,&_ibeacon_model_state)
-
-};
-
 static esp_ble_mesh_elem_t elements[] = {
         ESP_BLE_MESH_ELEMENT(0, root_models, custom_models)
 };
@@ -67,8 +67,9 @@ static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_me
 // For logging purpose only
 static void prov_complete(uint16_t net_idx, uint16_t addr, uint8_t flags, uint32_t iv_index);
 void config_server_callback(esp_ble_mesh_cfg_server_cb_event_t event, esp_ble_mesh_cfg_server_cb_param_t *param);
-void custom_ibeacon_server_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param);
-static void ble_mesh_scan_cb(esp_ble_mesh_ble_cb_event_t event, esp_ble_mesh_ble_cb_param_t *param);
+//  Da eliminire perchè relativa alle scansioni BLE ibeacon
+//void custom_ibeacon_server_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param);
+esp_err_t ble_beacon_mesh_send(void);
 
 static esp_ble_mesh_prov_t provision = {
         .uuid = dev_uuid,
@@ -91,6 +92,7 @@ static esp_ble_mesh_comp_t composition = {
 
 void ble_mesh_get_dev_uuid();
 
-void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rssi);
+//  Da eliminire perchè relativa all'aggiornamento di stato del server node
+//  void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rssi);
 
 #endif //TEST_MESH_NETWORK_BLUETOOTH_MESH_H
