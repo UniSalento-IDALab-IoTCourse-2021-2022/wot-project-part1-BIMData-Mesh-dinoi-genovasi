@@ -2,6 +2,7 @@
 #include "bluetooth_mesh.h"
 #include "esp_ibeacon_api.h"
 #include <math.h>
+#include <esp_ble_mesh_local_data_operation_api.h>
 
 #define BLUETOOTH_MESH_TAG "BLE_MESH"
 
@@ -35,6 +36,8 @@ static void prov_complete(uint16_t net_idx, uint16_t addr, uint8_t flags, uint32
 {
     ESP_LOGI(BLUETOOTH_MESH_TAG, "net_idx 0x%03x, addr 0x%04x", net_idx, addr);
     ESP_LOGI(BLUETOOTH_MESH_TAG, "flags 0x%02x, iv_index 0x%08x", flags, iv_index);
+    prov_key.net_idx = net_idx;
+    esp_ble_mesh_model_subscribe_group_addr(esp_ble_mesh_get_primary_element_address(), CID_ESP,ESP_BLE_MESH_IBEACON_MODEL_ID_SERVER,ESP_BLE_MESH_GROUP_PUB_ADDR );
 }
 
 static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_mesh_prov_cb_param_t *param) {
@@ -82,6 +85,8 @@ void config_server_callback(esp_ble_mesh_cfg_server_cb_event_t event, esp_ble_me
                          param->value.state_change.appkey_add.net_idx,
                          param->value.state_change.appkey_add.app_idx);
                 ESP_LOG_BUFFER_HEX("AppKey", param->value.state_change.appkey_add.app_key, 16);
+                memcpy(prov_key.app_key,param->value.state_change.appkey_add.app_key,16);
+                prov_key.app_idx = param->value.state_change.appkey_add.app_idx;
                 break;
             case ESP_BLE_MESH_MODEL_OP_MODEL_APP_BIND:
                 ESP_LOGI(BLUETOOTH_MESH_TAG, "ESP_BLE_MESH_MODEL_OP_MODEL_APP_BIND");

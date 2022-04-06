@@ -86,6 +86,12 @@ static esp_ble_mesh_comp_t composition = {
         .element_count = ARRAY_SIZE(elements)
 };
 
+static struct esp_ble_mesh_key {
+    uint16_t net_idx;
+    uint16_t app_idx;
+    uint8_t app_key[16];
+}prov_key;
+
 void ble_mesh_get_dev_uuid();
 
 void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rssi);
