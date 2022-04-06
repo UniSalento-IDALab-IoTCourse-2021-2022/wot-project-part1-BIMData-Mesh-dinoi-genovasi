@@ -16,7 +16,7 @@ esp_err_t ble_mesh_init() {
     esp_ble_mesh_register_config_server_callback(config_server_callback);
     esp_ble_mesh_register_custom_model_callback(custom_ibeacon_server_callback);
 
-    esp_ble_mesh_register_ble_callback(ble_mesh_scan_cb);
+    //esp_ble_mesh_register_ble_callback(ble_mesh_scan_cb);
 
 
 
@@ -32,9 +32,9 @@ esp_err_t ble_mesh_init() {
         return err;
     }
 
-    struct bt_mesh_ble_scan_param sparam;
+    /*struct bt_mesh_ble_scan_param sparam;
     sparam.duration = 5;
-    bt_mesh_start_ble_scan(&sparam);
+    bt_mesh_start_ble_scan(&sparam);*/
 
     ESP_LOGI(BLUETOOTH_MESH_TAG, "BLE Mesh Node initialization complete");
     return ESP_OK;
