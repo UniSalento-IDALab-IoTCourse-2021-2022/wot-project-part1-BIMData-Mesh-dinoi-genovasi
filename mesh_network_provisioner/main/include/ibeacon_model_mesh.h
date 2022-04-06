@@ -10,6 +10,7 @@
 #define ESP_BLE_MESH_IBEACON_MODEL_OP_BEACON         ESP_BLE_MESH_MODEL_OP_3(0x04, CID_ESP)
 #define ESP_BLE_MESH_IBEACON_MODEL_OP_STATUS      ESP_BLE_MESH_MODEL_OP_3(0x05, CID_ESP)
 
+#define ESP_BLE_MESH_GROUP_PUB_ADDR               0xC100
 
 typedef struct __attribute__((packed)){
     uint8_t uuid[16];
