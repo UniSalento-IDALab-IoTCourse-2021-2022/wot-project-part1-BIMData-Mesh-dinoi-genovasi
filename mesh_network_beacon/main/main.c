@@ -41,5 +41,9 @@ void app_main(void)
 
     xTaskCreate(&ota_task, "ota_update_task", 8192, NULL, 5, NULL);
 
+    while(1){
+        ble_beacon_mesh_send();
+        vTaskDelay(pdMS_TO_TICKS(1000));
+    }
 }
 
