@@ -439,7 +439,7 @@ CONFIG_BLE_MESH_DEINIT=y
 # BLE Mesh and BLE coexistence support
 #
 # CONFIG_BLE_MESH_SUPPORT_BLE_ADV is not set
-CONFIG_BLE_MESH_SUPPORT_BLE_SCAN=y
+# CONFIG_BLE_MESH_SUPPORT_BLE_SCAN is not set
 # end of BLE Mesh and BLE coexistence support
 
 # CONFIG_BLE_MESH_FAST_PROV is not set
