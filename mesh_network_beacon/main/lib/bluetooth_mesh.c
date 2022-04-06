@@ -97,7 +97,7 @@ void config_server_callback(esp_ble_mesh_cfg_server_cb_event_t event, esp_ble_me
                 ESP_LOG_BUFFER_HEX("AppKey", param->value.state_change.appkey_add.app_key, 16);
                 memcpy(prov_key.app_key, param->value.state_change.appkey_add.app_key, 16);
                 prov_key.app_idx = param->value.state_change.appkey_add.app_idx;
-                esp_ble_mesh_node_bind_app_key_to_local_model(esp_ble_mesh_get_primary_element_address(),CID_ESP,ESP_BLE_MESH_IBEACON_MODEL_ID_CLIENT,prov_key.app_idx);
+                esp_ble_mesh_node_bind_app_key_to_local_model(esp_ble_mesh_get_primary_element_address()+1,CID_ESP,ESP_BLE_MESH_IBEACON_MODEL_ID_CLIENT,prov_key.app_idx);
                 break;
             case ESP_BLE_MESH_MODEL_OP_MODEL_APP_BIND:
                 ESP_LOGI(BLUETOOTH_MESH_TAG, "ESP_BLE_MESH_MODEL_OP_MODEL_APP_BIND");
@@ -212,14 +212,14 @@ esp_err_t ble_beacon_mesh_send(void){
         ctx.send_ttl = 7;
         ctx.send_rel = false;
 
-        model_ibeacon_data_t ibeacon_resp = *(model_ibeacon_data_t *) ibeacon_model_client.model->user_data;
+        model_ibeacon_data_t* ibeacon_resp = (model_ibeacon_data_t *) ibeacon_model_client.model->user_data;
 
-        memcpy(ibeacon_resp.uuid, dev_uuid, 16);
-        ibeacon_resp.minor = 90;
-        ibeacon_resp.major = 69;
-        ibeacon_resp.counter = 0;
-        ibeacon_resp.distance = 0.0;
-        ibeacon_resp.rssi = 0;
+        memcpy(ibeacon_resp->uuid, dev_uuid, 16);
+        ibeacon_resp->minor = 90;
+        ibeacon_resp->major = 69;
+        ibeacon_resp->counter = 0;
+        ibeacon_resp->distance = 0.0;
+        ibeacon_resp->rssi = 0;
 
 
         err = esp_ble_mesh_client_model_send_msg(ibeacon_model_client.model, &ctx, opcode, 0, NULL, 0, false, ROLE_NODE);
