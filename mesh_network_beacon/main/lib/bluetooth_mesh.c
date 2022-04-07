@@ -124,7 +124,7 @@ void beaconing_task(void *pvParameter){
    // ESP_LOGI("WATERMARK","Watermark: %d",uxHighWaterMark);
     while(1){
         ble_beacon_mesh_send();
-        vTaskDelay(pdMS_TO_TICKS(1000));
+        vTaskDelay(pdMS_TO_TICKS(500));
       //  uxHighWaterMark = uxTaskGetStackHighWaterMark(NULL);
        // ESP_LOGI("WATERMARK2","Watermark: %d",uxHighWaterMark);
     }
