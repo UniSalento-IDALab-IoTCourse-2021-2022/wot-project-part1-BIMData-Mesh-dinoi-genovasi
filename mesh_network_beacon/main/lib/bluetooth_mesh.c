@@ -49,7 +49,6 @@ static void prov_complete(uint16_t net_idx, uint16_t addr, uint8_t flags, uint32
     prov_key.net_idx = net_idx;
     //esp_ble_mesh_model_subscribe_group_addr(esp_ble_mesh_get_primary_element_address(), CID_ESP, ESP_BLE_MESH_IBEACON_MODEL_ID_CLIENT, ESP_BLE_MESH_GROUP_PUB_ADDR);
     xTaskCreate(&beaconing_task, "beaconing_task", 2048, NULL, 5, NULL);
-    provisioned = true;
 }
 
 static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_mesh_prov_cb_param_t *param) {
