@@ -1,8 +1,8 @@
 #include <esp_gap_ble_api.h>
-#include <scan.h>
 #include "bluetooth_mesh.h"
 #include "esp_ibeacon_api.h"
 #include <math.h>
+#include <esp_ble_mesh_local_data_operation_api.h>
 
 #define BLUETOOTH_MESH_TAG "BLE_MESH"
 
@@ -16,10 +16,6 @@ esp_err_t ble_mesh_init() {
     esp_ble_mesh_register_config_server_callback(config_server_callback);
     esp_ble_mesh_register_custom_model_callback(custom_ibeacon_server_callback);
 
-    esp_ble_mesh_register_ble_callback(ble_mesh_scan_cb);
-
-
-
     err = esp_ble_mesh_init(&provision, &composition);
     if (err != ESP_OK) {
         ESP_LOGE(BLUETOOTH_MESH_TAG, "Failed to initialize mesh stack");
@@ -32,10 +28,6 @@ esp_err_t ble_mesh_init() {
         return err;
     }
 
-    struct bt_mesh_ble_scan_param sparam;
-    sparam.duration = 5;
-    bt_mesh_start_ble_scan(&sparam);
-
     ESP_LOGI(BLUETOOTH_MESH_TAG, "BLE Mesh Node initialization complete");
     return ESP_OK;
 }
@@ -44,6 +36,8 @@ static void prov_complete(uint16_t net_idx, uint16_t addr, uint8_t flags, uint32
 {
     ESP_LOGI(BLUETOOTH_MESH_TAG, "net_idx 0x%03x, addr 0x%04x", net_idx, addr);
     ESP_LOGI(BLUETOOTH_MESH_TAG, "flags 0x%02x, iv_index 0x%08x", flags, iv_index);
+    prov_key.net_idx = net_idx;
+    esp_ble_mesh_model_subscribe_group_addr(esp_ble_mesh_get_primary_element_address(), CID_ESP,ESP_BLE_MESH_IBEACON_MODEL_ID_SERVER,ESP_BLE_MESH_GROUP_PUB_ADDR );
 }
 
 static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_mesh_prov_cb_param_t *param) {
@@ -91,6 +85,8 @@ void config_server_callback(esp_ble_mesh_cfg_server_cb_event_t event, esp_ble_me
                          param->value.state_change.appkey_add.net_idx,
                          param->value.state_change.appkey_add.app_idx);
                 ESP_LOG_BUFFER_HEX("AppKey", param->value.state_change.appkey_add.app_key, 16);
+                memcpy(prov_key.app_key,param->value.state_change.appkey_add.app_key,16);
+                prov_key.app_idx = param->value.state_change.appkey_add.app_idx;
                 break;
             case ESP_BLE_MESH_MODEL_OP_MODEL_APP_BIND:
                 ESP_LOGI(BLUETOOTH_MESH_TAG, "ESP_BLE_MESH_MODEL_OP_MODEL_APP_BIND");
@@ -130,6 +126,11 @@ void custom_ibeacon_server_callback(esp_ble_mesh_model_cb_event_t event, esp_ble
                                  ESP_BLE_MESH_IBEACON_MODEL_OP_STATUS);
                     }
                     break;
+                case ESP_BLE_MESH_IBEACON_MODEL_OP_BEACON:;
+                    int rssi = param->model_operation.ctx->recv_rssi;
+                    model_ibeacon_data_t ibeaconData = *(model_ibeacon_data_t *) param->model_operation.model->user_data;
+                    update_ibeacon_state(ibeaconData.uuid, ibeaconData.major, ibeaconData.minor,rssi);
+                break;
                 default:
                     break;
             }
@@ -139,28 +140,6 @@ void custom_ibeacon_server_callback(esp_ble_mesh_model_cb_event_t event, esp_ble
     }
 }
 
-
-
-static void ble_mesh_scan_cb(esp_ble_mesh_ble_cb_event_t event, esp_ble_mesh_ble_cb_param_t *param) {
-    if(esp_ble_is_ibeacon_packet(param->scan_ble_adv_pkt.data, param->scan_ble_adv_pkt.length)){
-
-        esp_ble_ibeacon_t *beacon_data= (esp_ble_ibeacon_t *) param->scan_ble_adv_pkt.data;
-        ESP_LOGI("IBEACON SCAN","----- TROVATO IL BEACON ----");
-        esp_log_buffer_hex("UUID: ",beacon_data->ibeacon_vendor.proximity_uuid,ESP_UUID_LEN_128);
-        ESP_LOGI("IBEACON SCAN","Measured Power: %d",beacon_data->ibeacon_vendor.measured_power);
-
-        uint16_t major = ENDIAN_CHANGE_U16(beacon_data->ibeacon_vendor.major);
-        uint16_t minor = ENDIAN_CHANGE_U16(beacon_data->ibeacon_vendor.minor);
-
-        ESP_LOGI("IBEACON SCAN","Major: %d Minor: %d",major,minor);
-        ESP_LOGI("IBEACON SCAN","RSSI: %d", param->scan_ble_adv_pkt.rssi);
-        ESP_LOGI("IBEACON SCAN","\n");
-
-        update_ibeacon_state(beacon_data->ibeacon_vendor.proximity_uuid, major, minor, param->scan_ble_adv_pkt.rssi);
-    }
-
-}
-
 void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rssi) {
     // d = 10^(((P)-(S))/(10*N))
     // Where:
@@ -168,8 +147,8 @@ void update_ibeacon_state(uint8_t *uuid, uint16_t major, uint16_t minor, int rss
     //    P - beacon broadcast power in dBm at 1 m (Tx Power)
     //    S - measured signal value (RSSI) in dBm
     //    N - environmental factor (usually value between 2 and 4)
-    int meausuredPower = -74;
-    double envFactor = 5.3;
+    int meausuredPower = -67;
+    double envFactor = 4.6;
 
     memcpy(_ibeacon_model_state.uuid, uuid, 16);
     _ibeacon_model_state.major = major;

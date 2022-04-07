@@ -13,8 +13,6 @@
 
 
 #define CID_ESP 0x02E5
-//   DEVICE_ID defined in CMakeLists.txt macros and CMake options (usb-1 ... usb-4)
-#define DEVICE_ID "server"
 
 static uint8_t dev_uuid[16] = {0xdd, 0xdd};
 
@@ -45,7 +43,7 @@ static esp_ble_mesh_model_t root_models[] = {
 // Defining iBeacon Model operations
 static esp_ble_mesh_model_op_t ibeacon_op[] = {
         ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_IBEACON_MODEL_OP_GET, 0),  // OP_GET no minimo 0 bytes
-        ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_IBEACON_MODEL_OP_SET, 4),  // OP_SET no minimo 4 bytes
+        ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_IBEACON_MODEL_OP_BEACON, 0),  // OP_SET no minimo 4 bytes
         ESP_BLE_MESH_MODEL_OP_END,
 };
 
@@ -68,7 +66,6 @@ static void provisioning_callback(esp_ble_mesh_prov_cb_event_t event, esp_ble_me
 static void prov_complete(uint16_t net_idx, uint16_t addr, uint8_t flags, uint32_t iv_index);
 void config_server_callback(esp_ble_mesh_cfg_server_cb_event_t event, esp_ble_mesh_cfg_server_cb_param_t *param);
 void custom_ibeacon_server_callback(esp_ble_mesh_model_cb_event_t event, esp_ble_mesh_model_cb_param_t *param);
-static void ble_mesh_scan_cb(esp_ble_mesh_ble_cb_event_t event, esp_ble_mesh_ble_cb_param_t *param);
 
 static esp_ble_mesh_prov_t provision = {
         .uuid = dev_uuid,
@@ -88,6 +85,12 @@ static esp_ble_mesh_comp_t composition = {
         .elements = elements,
         .element_count = ARRAY_SIZE(elements)
 };
+
+static struct esp_ble_mesh_key {
+    uint16_t net_idx;
+    uint16_t app_idx;
+    uint8_t app_key[16];
+}prov_key;
 
 void ble_mesh_get_dev_uuid();
 
