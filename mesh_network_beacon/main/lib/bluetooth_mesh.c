@@ -238,3 +238,7 @@ esp_err_t ble_beacon_mesh_send(void){
 
     return err;
 }
+
+static bool isProvisioned(){
+    return provisioned;
+}

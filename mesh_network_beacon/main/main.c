@@ -41,7 +41,7 @@ void app_main(void)
 
     xTaskCreate(&ota_task, "ota_update_task", 8192, NULL, 5, NULL);
 
-    while(!provisioned){
+    while(!isProvisioned()){
         ESP_LOGI("WAIT","Waiting provisioning...");
         vTaskDelay(pdMS_TO_TICKS(100));
     }
