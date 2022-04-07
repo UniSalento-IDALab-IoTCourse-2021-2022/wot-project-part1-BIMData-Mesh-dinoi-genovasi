@@ -43,7 +43,7 @@ static esp_ble_mesh_model_t root_models[] = {
 // Defining iBeacon Model operations
 static esp_ble_mesh_model_op_t ibeacon_op[] = {
         ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_IBEACON_MODEL_OP_GET, 0),  // OP_GET no minimo 0 bytes
-        ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_IBEACON_MODEL_OP_BEACON, 4),  // OP_SET no minimo 4 bytes
+        ESP_BLE_MESH_MODEL_OP(ESP_BLE_MESH_IBEACON_MODEL_OP_BEACON, 0),  // OP_SET no minimo 4 bytes
         ESP_BLE_MESH_MODEL_OP_END,
 };
 
